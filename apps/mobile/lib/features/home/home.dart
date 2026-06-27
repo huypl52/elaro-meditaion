@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:elaro_mobile/features/session/session.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  CheckinState? _lastCheckin;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +34,8 @@ class HomeScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
+          _buildQuickCheckinRow(context),
+          const SizedBox(height: 16),
           Text(
             'Chọn hành động tiếp theo',
             style: Theme.of(context).textTheme.titleLarge,
@@ -35,7 +45,13 @@ class HomeScreen extends StatelessWidget {
             _BodyCtaButton(
               key: ValueKey(bodyCtas[i].keySuffix),
               label: bodyCtas[i].label,
-              route: bodyCtas[i].route,
+              onPressed: () => Navigator.of(context).pushNamed(
+                '/session/start',
+                arguments: SessionStartArgs(
+                  sessionRoute: bodyCtas[i].route,
+                  manualCheckin: _lastCheckin,
+                ),
+              ),
             ),
             const SizedBox(height: 12),
           ],
@@ -46,6 +62,43 @@ class HomeScreen extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildQuickCheckinRow(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Bạn cảm thấy thế nào trước phiên?',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 10,
+          runSpacing: 8,
+          children: [
+            EmotionChip(
+              key: const Key('checkin-calm'),
+              label: 'Ấm/nhẹ',
+              selected: _lastCheckin == CheckinState.calm,
+              onTap: () => setState(() => _lastCheckin = CheckinState.calm),
+            ),
+            EmotionChip(
+              key: const Key('checkin-low'),
+              label: 'Mệt',
+              selected: _lastCheckin == CheckinState.low,
+              onTap: () => setState(() => _lastCheckin = CheckinState.low),
+            ),
+            EmotionChip(
+              key: const Key('checkin-overload'),
+              label: 'Quá tải',
+              selected: _lastCheckin == CheckinState.overload,
+              onTap: () => setState(() => _lastCheckin = CheckinState.overload),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -84,11 +137,11 @@ class _BodyCtaButton extends StatelessWidget {
   const _BodyCtaButton({
     super.key,
     required this.label,
-    required this.route,
+    required this.onPressed,
   });
 
   final String label;
-  final String route;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +149,7 @@ class _BodyCtaButton extends StatelessWidget {
       width: double.infinity,
       height: 56,
       child: FilledButton(
-        onPressed: () => Navigator.of(context).pushNamed(route),
+        onPressed: onPressed,
         child: Text(label),
       ),
     );
@@ -140,6 +193,28 @@ class _HomeCta {
   final String keySuffix;
   final String label;
   final String route;
+}
+
+class EmotionChip extends StatelessWidget {
+  const EmotionChip({
+    super.key,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => onTap(),
+    );
+  }
 }
 
 enum _ContinuationMode { none, continueJourney, preSleep }
