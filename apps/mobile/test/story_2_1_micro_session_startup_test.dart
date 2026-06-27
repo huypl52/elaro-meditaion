@@ -74,7 +74,7 @@ void main() {
     expect(find.byKey(const Key('session-start-loading')), findsOneWidget);
     expect(find.text('Đang khởi động nhanh (standard)'), findsOneWidget);
 
-    await tester.pump(const Duration(milliseconds: 1099));
+    await tester.pump(const Duration(milliseconds: 1219));
     expect(find.byKey(const Key('session-start-loading')), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 1));

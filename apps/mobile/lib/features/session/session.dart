@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:elaro_mobile/runtime/dev_gate.dart';
+import 'package:elaro_mobile/runtime/microphone_permission_runtime.dart';
 import 'package:elaro_mobile/runtime/session.dart';
 
 import '../../components/breathing/breathing.dart';
@@ -51,6 +52,7 @@ class SessionStartArgs {
   const SessionStartArgs({
     required this.sessionRoute,
     required this.manualCheckin,
+    this.hasMicrophone,
     this.simulateNoMicrophone = false,
     this.simulateLowConfidence = false,
     this.sessionDurationSeconds = defaultDurationSeconds,
@@ -58,6 +60,7 @@ class SessionStartArgs {
 
   final String sessionRoute;
   final CheckinState? manualCheckin;
+  final bool? hasMicrophone;
   final bool simulateNoMicrophone;
   final bool simulateLowConfidence;
   final int sessionDurationSeconds;
@@ -78,6 +81,7 @@ class SessionStartArgs {
       return SessionStartArgs(
         sessionRoute: args['sessionRoute'] as String? ?? '/session/short-breath',
         manualCheckin: CheckinState.fromName(args['manualCheckin'] as String?),
+        hasMicrophone: args['hasMicrophone'] as bool?,
         simulateNoMicrophone: args['simulateNoMicrophone'] as bool? ?? false,
         simulateLowConfidence: args['simulateLowConfidence'] as bool? ?? false,
         sessionDurationSeconds: parsedDuration,
@@ -178,6 +182,7 @@ class SessionStartScreen extends StatefulWidget {
 class _SessionStartScreenState extends State<SessionStartScreen> {
   late int _selectedDurationSeconds;
   bool _isStarting = false;
+  final MicrophonePermissionRuntime _microphonePermissionRuntime = MicrophonePermissionRuntime.instance;
   _StartupMode _currentStartupMode = _StartupMode.standard;
 
   @override
@@ -258,6 +263,10 @@ class _SessionStartScreenState extends State<SessionStartScreen> {
       _currentStartupMode = startupMode;
     });
 
+    final hasMicrophone = widget.args.simulateNoMicrophone
+        ? false
+        : widget.args.hasMicrophone ?? await _microphonePermissionRuntime.preflight();
+
     final runtime = const SessionRuntime();
     final event = runtime.startSession(
       sessionRoute: widget.args.sessionRoute,
@@ -267,7 +276,7 @@ class _SessionStartScreenState extends State<SessionStartScreen> {
     );
     final timerState = SessionTimerState.fromStartEvent(
       event.toJson(),
-      hasMicrophone: !widget.args.simulateNoMicrophone,
+      hasMicrophone: hasMicrophone,
       noiseConfidence: widget.args.simulateLowConfidence ? 0.2 : null,
     );
 
@@ -325,15 +334,20 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
   static const Duration _tickInterval = Duration(seconds: 1);
 
   final SessionRuntime _runtime = const SessionRuntime();
+  final MicrophonePermissionRuntime _microphonePermissionRuntime = MicrophonePermissionRuntime.instance;
 
   late final String _sessionId;
   late final int _sessionDurationSeconds;
+  late SessionTimerState _timerState;
 
   int _elapsedSeconds = 0;
   bool _isPaused = false;
   bool _isComplete = false;
   bool _showRecoveryCard = false;
   bool _showSessionPostNudge = true;
+  bool _showEnrichmentDeniedMessage = false;
+
+  StreamSubscription<bool>? _microphonePermissionSubscription;
 
   Timer? _ticker;
   DateTime? _lastTick;
@@ -348,8 +362,10 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
 
     _sessionId = widget.args.startEvent.createdAt.toUtc().toIso8601String();
     _sessionDurationSeconds = widget.args.timerState.sessionDurationSeconds;
-    _elapsedSeconds = widget.args.timerState.elapsedSeconds;
-    _isPaused = widget.args.timerState.isPaused;
+    _timerState = widget.args.timerState;
+    _showEnrichmentDeniedMessage = !_timerState.hasMicrophone;
+    _elapsedSeconds = _timerState.elapsedSeconds;
+    _isPaused = _timerState.isPaused;
     _isComplete = _elapsedSeconds >= _sessionDurationSeconds;
     _bellCues = resolveBellCues(_sessionDurationSeconds);
 
@@ -373,6 +389,11 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
       }
       _emitStartHaptic();
     });
+
+    _microphonePermissionRuntime.preflight();
+    _microphonePermissionSubscription = _microphonePermissionRuntime.permissionStateStream
+        .listen(_handleMicrophonePermissionState);
+
     _persistState();
   }
 
@@ -398,9 +419,18 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _microphonePermissionSubscription?.cancel();
     _ticker?.cancel();
     _persistState();
     super.dispose();
+  }
+
+  void _handleMicrophonePermissionState(bool hasPermission) {
+    if (!mounted || _isComplete || hasPermission) {
+      return;
+    }
+
+    _onDropEnrichment();
   }
 
   void _restoreAfterInterruption() {
@@ -428,7 +458,7 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
   @override
   Widget build(BuildContext context) {
     final reduceMotion = MediaQuery.of(context).disableAnimations;
-    final sourceLabel = widget.args.timerState.hasMicrophone && !widget.args.timerState.usingManualContext
+    final sourceLabel = _timerState.hasMicrophone && !_timerState.usingManualContext
         ? 'sensor'
         : 'manual';
     final nextBell = _nextBell;
@@ -475,18 +505,28 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
               key: const Key('session-state-label'),
             ),
             const SizedBox(height: 16),
-            if (_showRecoveryCard)
+            if (_timerState.usingManualContext)
               Card(
-                key: const Key('session-recovery-card'),
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                color: Theme.of(context).colorScheme.surfaceContainerLowest,
                 child: Padding(
                   padding: const EdgeInsets.all(12),
-                  child: Text(
-                    'Phiên trước đó đã dừng giữa chừng; tiếp tục để giữ đúng mốc nhịp.',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Context thủ công: ${_timerState.noiseContextLabel}'),
+                      const SizedBox(height: 4),
+                      const Text('độ tin cậy thấp'),
+                      if (_showEnrichmentDeniedMessage) ...[
+                        const SizedBox(height: 4),
+                        const Text('Enrichment: bỏ qua (thiếu quyền mic)'),
+                      ],
+                    ],
                   ),
                 ),
               ),
+            if (_timerState.usingManualContext) const SizedBox(height: 12),
+            if (_showRecoveryCard)
+              _buildRecoveryChoicesCard(context),
             if (_showRecoveryCard) const SizedBox(height: 12),
             if (_isComplete) ...[
               _buildActiveReentryCard(),
@@ -527,7 +567,7 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
                   children: [
                     const Text('Session telemetry', style: TextStyle(fontWeight: FontWeight.w700)),
                     Text('mode: ${_isComplete ? 'complete' : _isPaused ? 'paused' : 'running'}'),
-                    Text('offline: ${!widget.args.timerState.hasMicrophone}'),
+                    Text('offline: ${!_timerState.hasMicrophone}'),
                     Text('source: $sourceLabel'),
                     Text('elapsed: $_elapsedSeconds'),
                     Text(
@@ -535,14 +575,19 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
                           ? 'bell status: completed'
                           : 'bell status: next in ${nextBell - _elapsedSeconds}s',
                     ),
-                    Text('noise confidence: ${widget.args.timerState.noiseConfidence ?? 'n/a'}'),
-                    Text('manual_checkin: ${widget.args.timerState.manualContext?.value}'),
-                    Text('mic toggle: ${widget.args.timerState.hasMicrophone}'),
+                    Text('noise confidence: ${_timerState.noiseConfidence ?? 'n/a'}'),
+                    Text('manual_checkin: ${_timerState.manualContext?.value}'),
+                    Text('mic toggle: ${_timerState.hasMicrophone}'),
                     Text('runtime-event label: ${_runtime.latestSessionEventLabel(sessionId: _sessionId)}'),
-                    if (widget.args.timerState.usingManualContext)
-                      Text('noise_context_label: ${widget.args.timerState.noiseContextLabel}'),
-                    if (widget.args.timerState.noiseConfidence != null)
-                      Text('noise_context: ${widget.args.timerState.noiseContextLabel}'),
+                    if (_timerState.usingManualContext)
+                      Text('noise_context_label: ${_timerState.noiseContextLabel}'),
+                    if (_timerState.noiseConfidence != null)
+                      Text('noise_context: ${_timerState.noiseContextLabel}'),
+                    TextButton(
+                      key: const Key('session-noise-confidence-toggle'),
+                      onPressed: _onDropEnrichment,
+                      child: const Text('session-noise-confidence-toggle'),
+                    ),
                   ],
                 ),
               )
@@ -576,6 +621,43 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
       onStop: _onSessionReentryStop,
       onRepeat: _onSessionReentryRepeat,
       onFollowup: _onSessionReentryFollowup,
+    );
+  }
+
+  Widget _buildRecoveryChoicesCard(BuildContext context) {
+    return Card(
+      key: const Key('session-recovery-card'),
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Phiên trước đó đã dừng giữa chừng; tiếp tục để giữ đúng mốc nhịp.',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              key: const Key('session-recovery-resume'),
+              onPressed: _onRecoveryResume,
+              child: const Text('Tiếp tục'),
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              key: const Key('session-recovery-close'),
+              onPressed: _onRecoveryClose,
+              child: const Text('Kết thúc nhẹ'),
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              key: const Key('session-recovery-new'),
+              onPressed: _onRecoveryNew,
+              child: const Text('Phiên mới'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -625,7 +707,7 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
   }
 
   bool _canUseHaptics(bool reduceMotion) {
-    return !reduceMotion && widget.args.timerState.hasMicrophone;
+    return !reduceMotion && _timerState.hasMicrophone;
   }
 
   void _startTicker() {
@@ -738,6 +820,57 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
     _startTicker();
   }
 
+  void _onDropEnrichment() {
+    final droppedTimerState = _runtime.dropEnrichment(timerState: _timerState);
+    if (droppedTimerState == _timerState) {
+      return;
+    }
+
+    setState(() {
+      _timerState = droppedTimerState;
+      _showRecoveryCard = true;
+      _showEnrichmentDeniedMessage = true;
+    });
+    _persistState();
+  }
+
+  void _onRecoveryResume() {
+    if (_isComplete) {
+      return;
+    }
+
+    setState(() {
+      _showRecoveryCard = false;
+    });
+
+    if (_isPaused) {
+      _onResume();
+      return;
+    }
+
+    if (_ticker == null) {
+      _startTicker();
+    }
+
+    _persistState();
+  }
+
+  void _onRecoveryClose() {
+    _goHome();
+  }
+
+  void _onRecoveryNew() {
+    Navigator.of(context).pushNamed(
+      '/session/start',
+      arguments: SessionStartArgs(
+        sessionRoute: widget.args.startEvent.sessionRoute,
+        manualCheckin: _timerState.manualContext,
+        hasMicrophone: _microphonePermissionRuntime.hasMicrophone,
+        simulateLowConfidence: _timerState.isLowConfidence,
+      ),
+    );
+  }
+
   void _onManualExit() {
     if (_isComplete) {
       _goHome();
@@ -761,10 +894,9 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
       '/session/start',
       arguments: SessionStartArgs(
         sessionRoute: widget.args.startEvent.sessionRoute,
-        manualCheckin: widget.args.timerState.manualContext,
-        simulateNoMicrophone: !widget.args.timerState.hasMicrophone,
-        simulateLowConfidence: widget.args.timerState.noiseConfidence != null &&
-            widget.args.timerState.noiseConfidence! < SessionTimerState.lowConfidenceThreshold,
+        manualCheckin: _timerState.manualContext,
+        hasMicrophone: _microphonePermissionRuntime.hasMicrophone,
+        simulateLowConfidence: _timerState.isLowConfidence,
       ),
     );
   }
@@ -923,6 +1055,7 @@ class SessionReEntryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sessionId = args.sessionId.isEmpty ? '' : args.sessionId;
+    final micPermissionRuntime = MicrophonePermissionRuntime.instance;
     return Scaffold(
       appBar: AppBar(title: const Text('Re-entry')),
       body: SingleChildScrollView(
@@ -938,7 +1071,7 @@ class SessionReEntryScreen extends StatelessWidget {
             arguments: SessionStartArgs(
               sessionRoute: args.sessionRoute,
               manualCheckin: args.manualCheckin,
-              simulateNoMicrophone: !args.hasMicrophone,
+              hasMicrophone: micPermissionRuntime.hasMicrophone,
             ),
           ),
           onFollowup: () {

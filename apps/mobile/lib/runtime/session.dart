@@ -13,6 +13,23 @@ class SessionRuntime {
     _recoveryStates.clear();
   }
 
+  SessionTimerState dropEnrichment({
+    required SessionTimerState timerState,
+  }) {
+    if (!timerState.hasMicrophone && timerState.noiseConfidence == 0.2) {
+      return timerState;
+    }
+
+    return SessionTimerState(
+      manualContext: timerState.manualContext,
+      hasMicrophone: false,
+      noiseConfidence: 0.2,
+      sessionDurationSeconds: timerState.sessionDurationSeconds,
+      elapsedSeconds: timerState.elapsedSeconds,
+      isPaused: timerState.isPaused,
+    );
+  }
+
   List<SessionTimelineEvent> get timeline => List.unmodifiable(_timeline);
 
   SessionStartEvent startSession({
@@ -266,13 +283,18 @@ class SessionTimerState {
     required this.isPaused,
   });
 
-  static const double lowConfidenceThreshold = 0.55;
+  static const double lowConfidenceThreshold = 0.6;
   final CheckinState? manualContext;
   final bool hasMicrophone;
   final double? noiseConfidence;
   final int sessionDurationSeconds;
   final int elapsedSeconds;
   final bool isPaused;
+
+  bool get isLowConfidence {
+    final confidence = noiseConfidence;
+    return confidence != null && confidence < lowConfidenceThreshold;
+  }
 
   factory SessionTimerState.fromStartEvent(
     Map<String, Object?> startEvent, {
@@ -293,9 +315,8 @@ class SessionTimerState {
 
   bool get usingManualContext {
     if (!hasMicrophone) return true;
-    final confidence = noiseConfidence;
-    if (confidence == null) return false;
-    return confidence < lowConfidenceThreshold;
+    if (noiseConfidence == null) return false;
+    return isLowConfidence;
   }
 
   String get noiseContextLabel {
