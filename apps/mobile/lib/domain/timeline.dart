@@ -1,5 +1,51 @@
 const String manualCheckinTimelineKey = 'manual_checkin';
 
+enum SessionTimelineEventType {
+  sosInterrupt('sos_interrupt'),
+  sosTimeoutExit('sos_timeout_exit');
+
+  const SessionTimelineEventType(this.value);
+
+  final String value;
+}
+
+class SessionTimelineEvent {
+  const SessionTimelineEvent({
+    required this.type,
+    required this.at,
+    required this.payload,
+  });
+
+  final SessionTimelineEventType type;
+  final DateTime at;
+  final Map<String, Object?> payload;
+
+  Map<String, Object?> toJson() {
+    return <String, Object?>{
+      'type': type.value,
+      'at': at.toUtc().toIso8601String(),
+      ...payload,
+    };
+  }
+
+  factory SessionTimelineEvent.fromJson(Map<String, Object?> json) {
+    final type = SessionTimelineEventType.values.cast<SessionTimelineEventType?>().firstWhere(
+          (event) => event?.value == json['type'],
+          orElse: () => null,
+        ) ??
+        SessionTimelineEventType.sosInterrupt;
+
+    final rawAt = json['at'];
+    final at = rawAt is String ? DateTime.parse(rawAt) : DateTime.fromMillisecondsSinceEpoch(0).toUtc();
+
+    return SessionTimelineEvent(
+      type: type,
+      at: at,
+      payload: Map<String, Object?>.from(json)..remove('type')..remove('at'),
+    );
+  }
+}
+
 class SessionStartEvent {
   const SessionStartEvent({
     required this.sessionRoute,

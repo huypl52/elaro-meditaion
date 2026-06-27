@@ -3,7 +3,15 @@ import 'package:elaro_mobile/domain/timeline.dart';
 import '../features/session/session.dart';
 
 class SessionRuntime {
+  static final List<SessionTimelineEvent> _timeline = <SessionTimelineEvent>[];
+
   const SessionRuntime();
+
+  void resetForTests() {
+    _timeline.clear();
+  }
+
+  List<SessionTimelineEvent> get timeline => List.unmodifiable(_timeline);
 
   SessionStartEvent startSession({
     required String sessionRoute,
@@ -14,6 +22,26 @@ class SessionRuntime {
       createdAt: DateTime.now().toUtc(),
       manualCheckin: manualCheckin?.value,
       payload: const <String, Object?>{},
+    );
+  }
+
+  void recordSosInterrupt({required String reason, DateTime? at}) {
+    _timeline.add(
+      SessionTimelineEvent(
+        type: SessionTimelineEventType.sosInterrupt,
+        at: at ?? DateTime.now().toUtc(),
+        payload: <String, Object?>{'reason': reason},
+      ),
+    );
+  }
+
+  void recordSosTimeoutExit({DateTime? at}) {
+    _timeline.add(
+      SessionTimelineEvent(
+        type: SessionTimelineEventType.sosTimeoutExit,
+        at: at ?? DateTime.now().toUtc(),
+        payload: const <String, Object?>{},
+      ),
     );
   }
 }

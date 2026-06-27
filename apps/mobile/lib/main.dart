@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'features/home/home.dart';
-import 'features/session/session.dart';
+import 'package:elaro_mobile/features/home/home.dart';
+import 'package:elaro_mobile/features/session/session.dart';
+import 'package:elaro_mobile/features/sos/sos.dart';
+import 'package:elaro_mobile/runtime/sos_runtime.dart';
 
 void main() {
   runApp(const ElaroMedApp());
@@ -14,116 +16,60 @@ class ElaroMedApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Elaro',
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.teal,
-      ),
       initialRoute: '/home',
-      onGenerateRoute: _buildRoute,
+      onGenerateRoute: _onGenerateRoute,
     );
   }
 
-  Route<dynamic> _buildRoute(RouteSettings settings) {
+  static Route<dynamic> _onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case '/':
       case '/home':
-        return MaterialPageRoute<dynamic>(
+        return MaterialPageRoute(
           settings: settings,
           builder: (_) => const HomeScreen(),
         );
       case '/sos':
-        return MaterialPageRoute<dynamic>(
+        final args = SosEntryArgs.fromDynamic(settings.arguments);
+        return MaterialPageRoute(
           settings: settings,
-          builder: (_) => const _PlaceholderScreen(
-            title: 'SOS',
-            message: 'Đường vào nhanh để hạ nhịp trong 60 giây.',
-          ),
+          builder: (_) => SosEntryScreen(args: args),
+        );
+      case '/sos/active':
+        final args = SosActiveArgs.fromDynamic(settings.arguments);
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => SosActiveScreen(args: args),
         );
       case '/session/start':
-        return MaterialPageRoute<dynamic>(
+        final args = SessionStartArgs.fromDynamic(settings.arguments);
+        return MaterialPageRoute(
           settings: settings,
-          builder: (_) => SessionStartScreen(args: SessionStartArgs.fromDynamic(settings.arguments)),
+          builder: (_) => SessionStartScreen(args: args),
         );
-      case '/session/short-breath':
-      case '/session/before-sleep':
-      case '/session/continue':
-        return MaterialPageRoute<dynamic>(
+      case '/session/active':
+        final args = settings.arguments;
+        if (args is! SessionActiveArgs) {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const Scaffold(
+              body: Center(child: Text('Không tìm thấy phiên active')),
+            ),
+          );
+        }
+        return MaterialPageRoute(
           settings: settings,
-          builder: (_) => SessionStartScreen(
-            args: SessionStartArgs(
-              sessionRoute: settings.name ?? '/session/short-breath',
-              manualCheckin: null,
+          builder: (_) => SessionActiveScreen(args: args),
+        );
+      default:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const Scaffold(
+            body: Center(
+              child: Text('Không tìm thấy route'),
             ),
           ),
         );
-      case '/session/active':
-        final activeArgs = settings.arguments;
-        return MaterialPageRoute<dynamic>(
-          settings: settings,
-          builder: (_) => activeArgs is SessionActiveArgs
-              ? SessionActiveScreen(args: activeArgs)
-              : const _SessionActiveFallbackScreen(),
-        );
-      case '/':
-        return MaterialPageRoute<dynamic>(
-          settings: settings,
-          builder: (_) => const HomeScreen(),
-        );
-      default:
-        return MaterialPageRoute<dynamic>(
-          settings: settings,
-          builder: (_) => const HomeScreen(),
-        );
     }
-  }
-}
-
-class _SessionActiveFallbackScreen extends StatelessWidget {
-  const _SessionActiveFallbackScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const _PlaceholderScreen(
-      title: 'Session',
-      message: 'Không thể mở phiên. Vui lòng thử lại.',
-    );
-  }
-}
-
-class _PlaceholderScreen extends StatelessWidget {
-  const _PlaceholderScreen({
-    required this.title,
-    required this.message,
-  });
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 24),
-              FilledButton(
-                onPressed: () => Navigator.of(context).pushNamed('/home'),
-                child: const Text('Về Home'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:elaro_mobile/features/session/session.dart';
+import 'package:elaro_mobile/runtime/sensor_runtime.dart';
+import 'package:elaro_mobile/runtime/sos_runtime.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,7 +29,16 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           Padding(
             padding: const EdgeInsetsDirectional.only(end: 12),
-            child: _SosCapsule(onPressed: () => Navigator.of(context).pushNamed('/sos')),
+            child: _SosCapsule(
+              onPressed: () => Navigator.of(context).pushNamed(
+                '/sos',
+                arguments: SosEntryArgs(
+                  contextSnapshot: _lastCheckin,
+                  contextAvailable: _lastCheckin != null,
+                  sensorAvailable: SensorRuntime.instance.sensorAvailable,
+                ),
+              ),
+            ),
           ),
         ],
       ),
