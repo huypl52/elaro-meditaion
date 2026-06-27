@@ -3,7 +3,7 @@ baseline_commit: 3b889ca43c984a5349594b669ec93245dc6ce929
 ---
 # Story 3.2: Voice journal sau phiên
 
-Status: review
+Status: done
 
 ## Story
 
@@ -52,8 +52,8 @@ So that tôi lưu lại phản ánh của mình một cách riêng tư.
 
 - created: 2026-06-24
 - reconciled: 2026-06-26 (source at apps/mobile/; ACs match shipped behavior)
-- dev_status: complete
-- code_review: reconciled
+- dev_status: done
+- code_review: PASS
 
 ## Dev Agent Record
 
@@ -92,3 +92,4 @@ So that tôi lưu lại phản ánh của mình một cách riêng tư.
 ## Change Log
 
 - 2026-06-27: Added Story 3.2 voice journal UI, private/no-transcript save runtime, timeline journal event, focused tests, and moved story to review.
+- 2026-06-27: Review PASS recorded; story closed as done.

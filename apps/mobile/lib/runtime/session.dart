@@ -32,6 +32,19 @@ class SessionRuntime {
 
   List<SessionTimelineEvent> get timeline => List.unmodifiable(_timeline);
 
+  String get lastSessionId {
+    for (final event in _timeline.reversed) {
+      final Object? rawSessionId = event.payload[sessionIdTimelineKey];
+      if (rawSessionId is String &&
+          rawSessionId.isNotEmpty &&
+          rawSessionId != 'sos') {
+        return rawSessionId;
+      }
+    }
+
+    return 'none';
+  }
+
   int get totalSessionCount {
     return _completedSessionEvents.length;
   }
@@ -156,6 +169,31 @@ class SessionRuntime {
       elapsedSeconds: elapsedSeconds,
       payload: <String, Object?>{reasonTimelineKey: 'cue-$cue'},
     );
+  }
+
+  String saveVoiceJournal({
+    required String sessionId,
+    required bool isPrivate,
+    required bool transcribeAllowed,
+    DateTime? at,
+  }) {
+    final savedAt = at ?? DateTime.now().toUtc();
+    final entryId = 'voice-journal-${savedAt.microsecondsSinceEpoch}';
+
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.journal,
+      at: savedAt,
+      sessionId: sessionId,
+      elapsedSeconds: 0,
+      payload: <String, Object?>{
+        'journal_id': entryId,
+        'private': isPrivate,
+        'transcribe_allowed': transcribeAllowed,
+        'has_transcript': false,
+      },
+    );
+
+    return entryId;
   }
 
   void recordRecovery({

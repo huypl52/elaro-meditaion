@@ -4,6 +4,7 @@ import 'package:elaro_mobile/features/growth/growth.dart';
 import 'package:elaro_mobile/features/home/home.dart';
 import 'package:elaro_mobile/features/session/session.dart';
 import 'package:elaro_mobile/features/sos/sos.dart';
+import 'package:elaro_mobile/features/voice_journal/voice_journal.dart';
 import 'package:elaro_mobile/runtime/sos_runtime.dart';
 
 void main() {
@@ -63,6 +64,11 @@ class ElaroMedApp extends StatelessWidget {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => SessionActiveScreen(args: args),
+        );
+      case '/voice-journal':
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const VoiceJournalScreen(),
         );
     }
 
