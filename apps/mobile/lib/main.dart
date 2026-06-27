@@ -17,18 +17,22 @@ class ElaroMedApp extends StatelessWidget {
     return MaterialApp(
       title: 'Elaro',
       initialRoute: '/home',
-      onGenerateRoute: _onGenerateRoute,
+      onGenerateRoute: _buildRoute,
     );
   }
 
-  static Route<dynamic> _onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case '/':
-      case '/home':
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const HomeScreen(),
-        );
+  static Route<dynamic> _buildRoute(RouteSettings settings) {
+    final String routeName = settings.name ?? '/';
+    final String canonicalRoute = routeName == '/' ? '/home' : routeName;
+
+    if (_isTabRoute(canonicalRoute)) {
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (_) => _TabScaffold(selectedRoute: canonicalRoute),
+      );
+    }
+
+    switch (canonicalRoute) {
       case '/sos':
         final args = SosEntryArgs.fromDynamic(settings.arguments);
         return MaterialPageRoute(
@@ -52,24 +56,151 @@ class ElaroMedApp extends StatelessWidget {
         if (args is! SessionActiveArgs) {
           return MaterialPageRoute(
             settings: settings,
-            builder: (_) => const Scaffold(
-              body: Center(child: Text('Không tìm thấy phiên active')),
-            ),
+            builder: (_) => _TabScaffold(selectedRoute: '/home'),
           );
         }
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => SessionActiveScreen(args: args),
         );
-      default:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const Scaffold(
-            body: Center(
-              child: Text('Không tìm thấy route'),
-            ),
-          ),
-        );
     }
+
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (_) => _TabScaffold(selectedRoute: '/home'),
+    );
+  }
+}
+
+class _TabDestination {
+  const _TabDestination({
+    required this.route,
+    required this.label,
+    required this.icon,
+    required this.builder,
+  });
+
+  final String route;
+  final String label;
+  final IconData icon;
+  final WidgetBuilder builder;
+}
+
+final List<_TabDestination> _kTabDestinations = [
+  _TabDestination(
+    route: '/home',
+    label: 'Home',
+    icon: Icons.home_outlined,
+    builder: (_) => const HomeScreen(),
+  ),
+  _TabDestination(
+    route: '/library',
+    label: 'Library',
+    icon: Icons.menu_book_outlined,
+    builder: (_) => const _LibraryScreen(),
+  ),
+  _TabDestination(
+    route: '/growth',
+    label: 'Growth',
+    icon: Icons.insights_outlined,
+    builder: (_) => const _GrowthScreen(),
+  ),
+  _TabDestination(
+    route: '/settings',
+    label: 'Settings',
+    icon: Icons.settings_outlined,
+    builder: (_) => const _SettingsScreen(),
+  ),
+];
+
+bool _isTabRoute(String route) {
+  return _kTabDestinations.any((destination) => destination.route == route);
+}
+
+class _TabScaffold extends StatelessWidget {
+  const _TabScaffold({required this.selectedRoute});
+
+  final String selectedRoute;
+
+  int get _selectedIndex {
+    final int index = _kTabDestinations.indexWhere(
+      (destination) => destination.route == selectedRoute,
+    );
+    return index == -1 ? 0 : index;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _kTabDestinations[_selectedIndex].builder(context),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (int index) {
+          final destination = _kTabDestinations[index];
+          if (destination.route == selectedRoute) {
+            return;
+          }
+          Navigator.of(context).pushReplacementNamed(destination.route);
+        },
+        destinations: [
+          for (final destination in _kTabDestinations)
+            NavigationDestination(
+              icon: Icon(destination.icon),
+              label: destination.label,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LibraryScreen extends StatelessWidget {
+  const _LibraryScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Library')),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const Text('Library'),
+        ],
+      ),
+    );
+  }
+}
+
+class _GrowthScreen extends StatelessWidget {
+  const _GrowthScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Growth')),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const Text('Growth'),
+        ],
+      ),
+    );
+  }
+}
+
+class _SettingsScreen extends StatelessWidget {
+  const _SettingsScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Settings')),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const Text('Settings'),
+        ],
+      ),
+    );
   }
 }

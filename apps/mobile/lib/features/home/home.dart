@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:elaro_mobile/features/session/session.dart';
+import 'package:elaro_mobile/components/calm_top_app_bar.dart';
 import 'package:elaro_mobile/runtime/sensor_runtime.dart';
 import 'package:elaro_mobile/runtime/sos_runtime.dart';
 
@@ -23,24 +24,21 @@ class _HomeScreenState extends State<HomeScreen> {
     final bodyCtas = _rankCtas(homeContext).take(2).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
+      appBar: CalmTopAppBar(
         title: const Text('Home'),
-        actions: [
-          Padding(
-            padding: const EdgeInsetsDirectional.only(end: 12),
-            child: _SosCapsule(
-              onPressed: () => Navigator.of(context).pushNamed(
-                '/sos',
-                arguments: SosEntryArgs(
-                  contextSnapshot: _lastCheckin,
-                  contextAvailable: _lastCheckin != null,
-                  sensorAvailable: SensorRuntime.instance.sensorAvailable,
-                ),
+        trailing: Padding(
+          padding: const EdgeInsetsDirectional.only(end: 12),
+          child: _SosCapsule(
+            onPressed: () => Navigator.of(context).pushNamed(
+              '/sos',
+              arguments: SosEntryArgs(
+                contextSnapshot: _lastCheckin,
+                contextAvailable: _lastCheckin != null,
+                sensorAvailable: SensorRuntime.instance.sensorAvailable,
               ),
             ),
           ),
-        ],
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -127,7 +125,7 @@ class _SosCapsule extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.6),
+          color: const Color(0xFFFFC107).withValues(alpha: 0.22),
           borderRadius: BorderRadius.circular(999),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
