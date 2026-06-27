@@ -4,11 +4,13 @@ import '../features/session/session.dart';
 
 class SessionRuntime {
   static final List<SessionTimelineEvent> _timeline = <SessionTimelineEvent>[];
+  static final Map<String, SessionRecoveryState> _recoveryStates = <String, SessionRecoveryState>{};
 
   const SessionRuntime();
 
   void resetForTests() {
     _timeline.clear();
+    _recoveryStates.clear();
   }
 
   List<SessionTimelineEvent> get timeline => List.unmodifiable(_timeline);
@@ -19,49 +21,239 @@ class SessionRuntime {
     required int sessionDurationSeconds,
     required String startupMode,
   }) {
+    final createdAt = DateTime.now().toUtc();
     final event = SessionStartEvent(
       sessionRoute: sessionRoute,
-      createdAt: DateTime.now().toUtc(),
+      createdAt: createdAt,
       manualCheckin: manualCheckin?.value,
       payload: <String, Object?>{
         sessionDurationTimelineKey: sessionDurationSeconds,
         startupModeTimelineKey: startupMode,
+        sessionIdTimelineKey: createdAt.toUtc().toIso8601String(),
       },
     );
 
-    _timeline.add(
-      SessionTimelineEvent(
-        type: SessionTimelineEventType.sessionStart,
-        at: event.createdAt,
-        payload: <String, Object?>{
-          'session_route': event.sessionRoute,
-          ...event.payload,
-        },
-      ),
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.sessionStart,
+      at: createdAt,
+      sessionId: createdAt.toIso8601String(),
+      elapsedSeconds: 0,
+      payload: <String, Object?>{
+        'session_route': event.sessionRoute,
+        ...event.payload,
+      },
     );
 
     return event;
   }
 
-  void recordSosInterrupt({required String reason, DateTime? at}) {
+  void recordPause({
+    required String sessionId,
+    required int elapsedSeconds,
+    DateTime? at,
+    String? reason,
+  }) {
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.sessionPause,
+      at: at ?? DateTime.now().toUtc(),
+      sessionId: sessionId,
+      elapsedSeconds: elapsedSeconds,
+      payload: _reasonPayload(reason),
+    );
+  }
+
+  void recordResume({
+    required String sessionId,
+    required int elapsedSeconds,
+    DateTime? at,
+    String? reason,
+  }) {
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.sessionResume,
+      at: at ?? DateTime.now().toUtc(),
+      sessionId: sessionId,
+      elapsedSeconds: elapsedSeconds,
+      payload: _reasonPayload(reason),
+    );
+  }
+
+  void recordComplete({
+    required String sessionId,
+    required int elapsedSeconds,
+    DateTime? at,
+  }) {
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.sessionComplete,
+      at: at ?? DateTime.now().toUtc(),
+      sessionId: sessionId,
+      elapsedSeconds: elapsedSeconds,
+    );
+    clearSessionRecovery(sessionId);
+  }
+
+  void recordManualExit({
+    required String sessionId,
+    required int elapsedSeconds,
+    required String reason,
+    DateTime? at,
+  }) {
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.sessionManualExit,
+      at: at ?? DateTime.now().toUtc(),
+      sessionId: sessionId,
+      elapsedSeconds: elapsedSeconds,
+      payload: _reasonPayload(reason),
+    );
+    clearSessionRecovery(sessionId);
+  }
+
+  void recordBell({
+    required String sessionId,
+    required int elapsedSeconds,
+    required int cue,
+  }) {
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.sessionBell,
+      at: DateTime.now().toUtc(),
+      sessionId: sessionId,
+      elapsedSeconds: elapsedSeconds,
+      payload: <String, Object?>{reasonTimelineKey: 'cue-$cue'},
+    );
+  }
+
+  void recordRecovery({
+    required String sessionId,
+    required int elapsedSeconds,
+    required bool isPaused,
+  }) {
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.sessionRecovery,
+      at: DateTime.now().toUtc(),
+      sessionId: sessionId,
+      elapsedSeconds: elapsedSeconds,
+      payload: <String, Object?>{
+        'is_paused': isPaused,
+      },
+    );
+  }
+
+  void recordSosInterrupt({
+    required String reason,
+  }) {
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.sosInterrupt,
+      at: DateTime.now().toUtc(),
+      sessionId: 'sos',
+      elapsedSeconds: 0,
+      payload: <String, Object?>{reasonTimelineKey: reason},
+    );
+  }
+
+  void recordSosTimeoutExit() {
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.sosTimeoutExit,
+      at: DateTime.now().toUtc(),
+      sessionId: 'sos',
+      elapsedSeconds: 0,
+      payload: const <String, Object?>{},
+    );
+  }
+
+  void saveSessionRecovery({
+    required String sessionId,
+    required int sessionDurationSeconds,
+    required int elapsedSeconds,
+    required bool isPaused,
+    DateTime? at,
+  }) {
+    _recoveryStates[sessionId] = SessionRecoveryState(
+      sessionDurationSeconds: sessionDurationSeconds,
+      elapsedSeconds: elapsedSeconds,
+      isPaused: isPaused,
+      recordedAt: at ?? DateTime.now().toUtc(),
+    );
+  }
+
+  SessionRecoveryState? consumeSessionRecovery({required String sessionId}) {
+    final snapshot = _recoveryStates[sessionId];
+    if (snapshot == null) {
+      return null;
+    }
+    _recoveryStates.remove(sessionId);
+    return snapshot;
+  }
+
+  SessionRecoveryState? peekSessionRecovery({required String sessionId}) {
+    return _recoveryStates[sessionId];
+  }
+
+  void clearSessionRecovery(String sessionId) {
+    _recoveryStates.remove(sessionId);
+  }
+
+  bool hasSessionRecovery({required String sessionId}) {
+    return _recoveryStates.containsKey(sessionId);
+  }
+
+  String latestSessionEventLabel({required String sessionId}) {
+    final latest = _latestEventForSession(sessionId);
+    if (latest == null) {
+      return 'none';
+    }
+    return latest.type.value;
+  }
+
+  SessionTimelineEvent? _latestEventForSession(String sessionId) {
+    for (final event in _timeline.reversed) {
+      if (event.payload[sessionIdTimelineKey] == sessionId) {
+        return event;
+      }
+    }
+    return null;
+  }
+
+  void _appendTimelineEvent({
+    required SessionTimelineEventType type,
+    required String sessionId,
+    required int elapsedSeconds,
+    required DateTime at,
+    Map<String, Object?>? payload,
+  }) {
+    final effectivePayload = <String, Object?>{
+      sessionIdTimelineKey: sessionId,
+      elapsedSecondsTimelineKey: elapsedSeconds,
+      ...?payload,
+    };
+
     _timeline.add(
       SessionTimelineEvent(
-        type: SessionTimelineEventType.sosInterrupt,
-        at: at ?? DateTime.now().toUtc(),
-        payload: <String, Object?>{'reason': reason},
+        type: type,
+        at: at,
+        payload: effectivePayload,
       ),
     );
   }
 
-  void recordSosTimeoutExit({DateTime? at}) {
-    _timeline.add(
-      SessionTimelineEvent(
-        type: SessionTimelineEventType.sosTimeoutExit,
-        at: at ?? DateTime.now().toUtc(),
-        payload: const <String, Object?>{},
-      ),
-    );
+  Map<String, Object?> _reasonPayload(String? reason) {
+    if (reason == null || reason.isEmpty) {
+      return const <String, Object?>{};
+    }
+    return <String, Object?>{reasonTimelineKey: reason};
   }
+}
+
+class SessionRecoveryState {
+  const SessionRecoveryState({
+    required this.sessionDurationSeconds,
+    required this.elapsedSeconds,
+    required this.isPaused,
+    required this.recordedAt,
+  });
+
+  final int sessionDurationSeconds;
+  final int elapsedSeconds;
+  final bool isPaused;
+  final DateTime recordedAt;
 }
 
 class SessionTimerState {
@@ -69,22 +261,33 @@ class SessionTimerState {
     required this.manualContext,
     required this.hasMicrophone,
     this.noiseConfidence,
+    required this.sessionDurationSeconds,
+    required this.elapsedSeconds,
+    required this.isPaused,
   });
 
   static const double lowConfidenceThreshold = 0.55;
   final CheckinState? manualContext;
   final bool hasMicrophone;
   final double? noiseConfidence;
+  final int sessionDurationSeconds;
+  final int elapsedSeconds;
+  final bool isPaused;
 
   factory SessionTimerState.fromStartEvent(
     Map<String, Object?> startEvent, {
     required bool hasMicrophone,
     double? noiseConfidence,
+    int? elapsedSeconds,
+    bool? isPaused,
   }) {
     return SessionTimerState(
       manualContext: CheckinState.fromName(startEvent[manualCheckinTimelineKey] as String?),
       hasMicrophone: hasMicrophone,
       noiseConfidence: noiseConfidence,
+      sessionDurationSeconds: startEvent[sessionDurationTimelineKey] as int? ?? SessionStartArgs.defaultDurationSeconds,
+      elapsedSeconds: elapsedSeconds ?? 0,
+      isPaused: isPaused ?? false,
     );
   }
 
@@ -102,4 +305,6 @@ class SessionTimerState {
     }
     return 'sensor-live';
   }
+
+  bool get isExpired => elapsedSeconds >= sessionDurationSeconds;
 }
