@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:elaro_mobile/features/growth/growth.dart';
 import 'package:elaro_mobile/features/home/home.dart';
 import 'package:elaro_mobile/features/session/session.dart';
 import 'package:elaro_mobile/features/sos/sos.dart';
@@ -67,7 +68,10 @@ class ElaroMedApp extends StatelessWidget {
 
     final reentryMatch = RegExp(r'^/session/(.+)/re-entry$').firstMatch(canonicalRoute);
     if (reentryMatch != null) {
-      final reentryArgs = SessionReEntryArgs.fromDynamic(settings.arguments, fallbackSessionRoute: '/session/short-breath');
+      final reentryArgs = SessionReEntryArgs.fromDynamic(
+        settings.arguments,
+        fallbackSessionRoute: '/session/short-breath',
+      );
       return MaterialPageRoute(
         settings: settings,
         builder: (_) => SessionReEntryScreen(
@@ -83,7 +87,10 @@ class ElaroMedApp extends StatelessWidget {
 
     final reflectionMatch = RegExp(r'^/session/(.+)/reflection$').firstMatch(canonicalRoute);
     if (reflectionMatch != null) {
-      final reflectionArgs = SessionReflectionArgs.fromDynamic(settings.arguments, fallbackSessionRoute: '/session/short-breath');
+      final reflectionArgs = SessionReflectionArgs.fromDynamic(
+        settings.arguments,
+        fallbackSessionRoute: '/session/short-breath',
+      );
       return MaterialPageRoute(
         settings: settings,
         builder: (_) => SessionReflectionScreen(
@@ -133,7 +140,7 @@ final List<_TabDestination> _kTabDestinations = [
     route: '/growth',
     label: 'Growth',
     icon: Icons.insights_outlined,
-    builder: (_) => const _GrowthScreen(),
+    builder: (_) => const GrowthScreen(),
   ),
   _TabDestination(
     route: '/settings',
@@ -193,25 +200,8 @@ class _LibraryScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Library')),
       body: ListView(
         padding: const EdgeInsets.all(24),
-        children: [
-          const Text('Library'),
-        ],
-      ),
-    );
-  }
-}
-
-class _GrowthScreen extends StatelessWidget {
-  const _GrowthScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Growth')),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          const Text('Growth'),
+        children: const [
+          Text('Library'),
         ],
       ),
     );
@@ -227,8 +217,8 @@ class _SettingsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         padding: const EdgeInsets.all(24),
-        children: [
-          const Text('Settings'),
+        children: const [
+          Text('Settings'),
         ],
       ),
     );

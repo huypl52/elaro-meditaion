@@ -32,6 +32,26 @@ class SessionRuntime {
 
   List<SessionTimelineEvent> get timeline => List.unmodifiable(_timeline);
 
+  int get totalSessionCount {
+    return _completedSessionEvents.length;
+  }
+
+  int get totalSessionDurationSeconds {
+    var total = 0;
+    for (final event in _completedSessionEvents) {
+      final Object? rawElapsed = event.payload[elapsedSecondsTimelineKey];
+      final int seconds = switch (rawElapsed) {
+        int() => rawElapsed,
+        num() => rawElapsed.toInt(),
+        _ => 0,
+      };
+      if (seconds > 0) {
+        total += seconds;
+      }
+    }
+    return total;
+  }
+
   SessionStartEvent startSession({
     required String sessionRoute,
     required CheckinState? manualCheckin,
@@ -227,6 +247,23 @@ class SessionRuntime {
       }
     }
     return null;
+  }
+
+  Iterable<SessionTimelineEvent> get _completedSessionEvents {
+    final Map<String, SessionTimelineEvent> latestBySessionId = <String, SessionTimelineEvent>{};
+    for (final event in _timeline.reversed) {
+      if (event.type != SessionTimelineEventType.sessionComplete) {
+        continue;
+      }
+
+      final Object? rawSessionId = event.payload[sessionIdTimelineKey];
+      if (rawSessionId is! String || rawSessionId.isEmpty) {
+        continue;
+      }
+      latestBySessionId.putIfAbsent(rawSessionId, () => event);
+    }
+
+    return latestBySessionId.values;
   }
 
   void _appendTimelineEvent({
