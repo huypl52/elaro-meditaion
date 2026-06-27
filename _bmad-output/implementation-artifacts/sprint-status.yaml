@@ -24,7 +24,7 @@
 #   - done: Retrospective has been completed
 
 generated: 2026-06-24T08:22:19Z
-last_updated: 2026-06-27T14:32:00+07:00
+last_updated: 2026-06-27T18:12:00+07:00
 project: meditation-community
 project_key: NOKEY
 tracking_system: file-system
@@ -64,9 +64,27 @@ development_status:
   6-4-recovery-exit-core-cho-high-stress-flows: backlog
   6-5-error-envelope-ids-sync-conflict-safety: backlog
   6-6-accessibility-baseline-v-haptic-first-runtime: backlog
-  1-retrospective: optional
+  1-retrospective: done
   2-retrospective: optional
   3-retrospective: optional
   4-retrospective: optional
   5-retrospective: optional
   6-retrospective: optional
+
+action_items:
+  - epic: "1"
+    action: "Boundary lock: kiểm tra source/review artifacts không chứa đường dẫn repo sai (`elaro-med`) trước khi close story."
+    owner: "Amelia"
+    status: open
+  - epic: "1"
+    action: "Close checklist: validate có ít nhất 1 file implementation và 1 file test tương ứng trong `apps/mobile` trước khi đổi trạng thái story sang done."
+    owner: "Amelia"
+    status: open
+  - epic: "1"
+    action: "Review checklist chuẩn hóa: mỗi finding phải có Expected/Actual/Fix + file/path cụ thể."
+    owner: "Paige"
+    status: open
+  - epic: "1"
+    action: "Process/Release: ràng buộc story đóng gói thành một packet (artifact + code + test) trong cùng một unit review để tránh split-traceability."
+    owner: "John"
+    status: open
