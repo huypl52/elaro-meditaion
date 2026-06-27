@@ -8,6 +8,10 @@ import 'package:elaro_mobile/runtime/microphone_permission_runtime.dart';
 import 'package:elaro_mobile/runtime/session.dart';
 
 import '../../components/breathing/breathing.dart';
+import '../../components/calm_feature_scaffold.dart';
+import '../../components/cta.dart';
+import '../../components/distress_boundary.dart';
+import '../../components/section_card.dart';
 import '../../domain/timeline.dart';
 
 enum CheckinState {
@@ -41,7 +45,9 @@ enum _StartupMode {
   final Duration startupDelay;
 
   static _StartupMode fromDuration(int durationSeconds) {
-    return durationSeconds <= 90 ? _StartupMode.microFast : _StartupMode.standard;
+    return durationSeconds <= 90
+        ? _StartupMode.microFast
+        : _StartupMode.standard;
   }
 }
 
@@ -79,7 +85,8 @@ class SessionStartArgs {
               : SessionStartArgs.defaultDurationSeconds;
 
       return SessionStartArgs(
-        sessionRoute: args['sessionRoute'] as String? ?? '/session/short-breath',
+        sessionRoute:
+            args['sessionRoute'] as String? ?? '/session/short-breath',
         manualCheckin: CheckinState.fromName(args['manualCheckin'] as String?),
         hasMicrophone: args['hasMicrophone'] as bool?,
         simulateNoMicrophone: args['simulateNoMicrophone'] as bool? ?? false,
@@ -92,7 +99,8 @@ class SessionStartArgs {
       return SessionStartArgs(sessionRoute: args, manualCheckin: null);
     }
 
-    return const SessionStartArgs(sessionRoute: '/session/short-breath', manualCheckin: null);
+    return const SessionStartArgs(
+        sessionRoute: '/session/short-breath', manualCheckin: null);
   }
 }
 
@@ -119,7 +127,8 @@ class SessionReEntryArgs {
   final CheckinState? manualCheckin;
   final bool hasMicrophone;
 
-  factory SessionReEntryArgs.fromDynamic(Object? args, {required String fallbackSessionRoute}) {
+  factory SessionReEntryArgs.fromDynamic(Object? args,
+      {required String fallbackSessionRoute}) {
     if (args is SessionReEntryArgs) {
       return args;
     }
@@ -146,12 +155,17 @@ class SessionReflectionArgs {
   const SessionReflectionArgs({
     required this.sessionId,
     required this.sessionRoute,
+    this.healthPermissionGranted = false,
+    this.bio,
   });
 
   final String sessionId;
   final String sessionRoute;
+  final bool healthPermissionGranted;
+  final _BiofeedbackSnapshot? bio;
 
-  factory SessionReflectionArgs.fromDynamic(Object? args, {required String fallbackSessionRoute}) {
+  factory SessionReflectionArgs.fromDynamic(Object? args,
+      {required String fallbackSessionRoute}) {
     if (args is SessionReflectionArgs) {
       return args;
     }
@@ -160,6 +174,9 @@ class SessionReflectionArgs {
       return SessionReflectionArgs(
         sessionId: args['sessionId'] as String? ?? '',
         sessionRoute: args['sessionRoute'] as String? ?? fallbackSessionRoute,
+        healthPermissionGranted:
+            args['healthPermissionGranted'] as bool? ?? false,
+        bio: _BiofeedbackSnapshot.fromDynamic(args['bio']),
       );
     }
 
@@ -182,7 +199,8 @@ class SessionStartScreen extends StatefulWidget {
 class _SessionStartScreenState extends State<SessionStartScreen> {
   late int _selectedDurationSeconds;
   bool _isStarting = false;
-  final MicrophonePermissionRuntime _microphonePermissionRuntime = MicrophonePermissionRuntime.instance;
+  final MicrophonePermissionRuntime _microphonePermissionRuntime =
+      MicrophonePermissionRuntime.instance;
   _StartupMode _currentStartupMode = _StartupMode.standard;
 
   @override
@@ -228,7 +246,8 @@ class _SessionStartScreenState extends State<SessionStartScreen> {
                     onSelected: (_) {
                       setState(() {
                         _selectedDurationSeconds = duration;
-                        _currentStartupMode = _StartupMode.fromDuration(duration);
+                        _currentStartupMode =
+                            _StartupMode.fromDuration(duration);
                       });
                     },
                   ),
@@ -265,7 +284,8 @@ class _SessionStartScreenState extends State<SessionStartScreen> {
 
     final hasMicrophone = widget.args.simulateNoMicrophone
         ? false
-        : widget.args.hasMicrophone ?? await _microphonePermissionRuntime.preflight();
+        : widget.args.hasMicrophone ??
+            await _microphonePermissionRuntime.preflight();
 
     final runtime = const SessionRuntime();
     final event = runtime.startSession(
@@ -329,12 +349,14 @@ class SessionActiveScreen extends StatefulWidget {
   State<SessionActiveScreen> createState() => _SessionActiveScreenState();
 }
 
-class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsBindingObserver {
+class _SessionActiveScreenState extends State<SessionActiveScreen>
+    with WidgetsBindingObserver {
   static const int _breathingPhaseSeconds = 4;
   static const Duration _tickInterval = Duration(seconds: 1);
 
   final SessionRuntime _runtime = const SessionRuntime();
-  final MicrophonePermissionRuntime _microphonePermissionRuntime = MicrophonePermissionRuntime.instance;
+  final MicrophonePermissionRuntime _microphonePermissionRuntime =
+      MicrophonePermissionRuntime.instance;
 
   late final String _sessionId;
   late final int _sessionDurationSeconds;
@@ -374,7 +396,10 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
       _elapsedSeconds = recovered.elapsedSeconds;
       _isPaused = recovered.isPaused;
       _showRecoveryCard = true;
-      _runtime.recordRecovery(sessionId: _sessionId, elapsedSeconds: _elapsedSeconds, isPaused: _isPaused);
+      _runtime.recordRecovery(
+          sessionId: _sessionId,
+          elapsedSeconds: _elapsedSeconds,
+          isPaused: _isPaused);
     }
 
     _syncBells();
@@ -391,7 +416,8 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
     });
 
     _microphonePermissionRuntime.preflight();
-    _microphonePermissionSubscription = _microphonePermissionRuntime.permissionStateStream
+    _microphonePermissionSubscription = _microphonePermissionRuntime
+        .permissionStateStream
         .listen(_handleMicrophonePermissionState);
 
     _persistState();
@@ -403,7 +429,9 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
       return;
     }
 
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
       _persistState();
       _ticker?.cancel();
       _ticker = null;
@@ -447,7 +475,10 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
       _isPaused = snapshot.isPaused;
       _showRecoveryCard = true;
     });
-    _runtime.recordRecovery(sessionId: _sessionId, elapsedSeconds: _elapsedSeconds, isPaused: _isPaused);
+    _runtime.recordRecovery(
+        sessionId: _sessionId,
+        elapsedSeconds: _elapsedSeconds,
+        isPaused: _isPaused);
     _persistState();
 
     if (!_isPaused && _elapsedSeconds < _sessionDurationSeconds) {
@@ -458,9 +489,10 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
   @override
   Widget build(BuildContext context) {
     final reduceMotion = MediaQuery.of(context).disableAnimations;
-    final sourceLabel = _timerState.hasMicrophone && !_timerState.usingManualContext
-        ? 'sensor'
-        : 'manual';
+    final sourceLabel =
+        _timerState.hasMicrophone && !_timerState.usingManualContext
+            ? 'sensor'
+            : 'manual';
     final nextBell = _nextBell;
 
     return Scaffold(
@@ -481,7 +513,9 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
             SoftTimer(
               totalSeconds: _sessionDurationSeconds,
               elapsedSeconds: _elapsedSeconds,
-              label: reduceMotion ? 'Hiển thị bằng text để an toàn chuyển động' : null,
+              label: reduceMotion
+                  ? 'Hiển thị bằng text để an toàn chuyển động'
+                  : null,
             ),
             const SizedBox(height: 16),
             Align(
@@ -513,7 +547,8 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Context thủ công: ${_timerState.noiseContextLabel}'),
+                      Text(
+                          'Context thủ công: ${_timerState.noiseContextLabel}'),
                       const SizedBox(height: 4),
                       const Text('độ tin cậy thấp'),
                       if (_showEnrichmentDeniedMessage) ...[
@@ -525,8 +560,7 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
                 ),
               ),
             if (_timerState.usingManualContext) const SizedBox(height: 12),
-            if (_showRecoveryCard)
-              _buildRecoveryChoicesCard(context),
+            if (_showRecoveryCard) _buildRecoveryChoicesCard(context),
             if (_showRecoveryCard) const SizedBox(height: 12),
             if (_isComplete) ...[
               _buildActiveReentryCard(),
@@ -565,8 +599,10 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Session telemetry', style: TextStyle(fontWeight: FontWeight.w700)),
-                    Text('mode: ${_isComplete ? 'complete' : _isPaused ? 'paused' : 'running'}'),
+                    const Text('Session telemetry',
+                        style: TextStyle(fontWeight: FontWeight.w700)),
+                    Text(
+                        'mode: ${_isComplete ? 'complete' : _isPaused ? 'paused' : 'running'}'),
                     Text('offline: ${!_timerState.hasMicrophone}'),
                     Text('source: $sourceLabel'),
                     Text('elapsed: $_elapsedSeconds'),
@@ -575,12 +611,15 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
                           ? 'bell status: completed'
                           : 'bell status: next in ${nextBell - _elapsedSeconds}s',
                     ),
-                    Text('noise confidence: ${_timerState.noiseConfidence ?? 'n/a'}'),
+                    Text(
+                        'noise confidence: ${_timerState.noiseConfidence ?? 'n/a'}'),
                     Text('manual_checkin: ${_timerState.manualContext?.value}'),
                     Text('mic toggle: ${_timerState.hasMicrophone}'),
-                    Text('runtime-event label: ${_runtime.latestSessionEventLabel(sessionId: _sessionId)}'),
+                    Text(
+                        'runtime-event label: ${_runtime.latestSessionEventLabel(sessionId: _sessionId)}'),
                     if (_timerState.usingManualContext)
-                      Text('noise_context_label: ${_timerState.noiseContextLabel}'),
+                      Text(
+                          'noise_context_label: ${_timerState.noiseContextLabel}'),
                     if (_timerState.noiseConfidence != null)
                       Text('noise_context: ${_timerState.noiseContextLabel}'),
                     TextButton(
@@ -680,7 +719,8 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Nhắc nhẹ tiếp theo', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text('Nhắc nhẹ tiếp theo',
+                  style: TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 6),
               Text(
                 'Nếu bạn muốn giữ nhịp nhẹ, có thể chọn một phiên ngắn nữa.',
@@ -730,7 +770,8 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
       return;
     }
 
-    final int nextElapsed = (_elapsedSeconds + delta).clamp(0, _sessionDurationSeconds);
+    final int nextElapsed =
+        (_elapsedSeconds + delta).clamp(0, _sessionDurationSeconds);
     if (nextElapsed == _elapsedSeconds) {
       return;
     }
@@ -751,11 +792,13 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
     for (final cue in _bellCues) {
       if (cue <= _elapsedSeconds && !_firedBells.contains(cue)) {
         _firedBells.add(cue);
-        final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+        final reduceMotion =
+            MediaQuery.maybeOf(context)?.disableAnimations ?? false;
         if (_canUseHaptics(reduceMotion)) {
           HapticFeedback.selectionClick();
         }
-        _runtime.recordBell(sessionId: _sessionId, elapsedSeconds: _elapsedSeconds, cue: cue);
+        _runtime.recordBell(
+            sessionId: _sessionId, elapsedSeconds: _elapsedSeconds, cue: cue);
       }
     }
   }
@@ -772,7 +815,8 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
       _persistState();
     });
 
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final reduceMotion =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     if (_canUseHaptics(reduceMotion)) {
       HapticFeedback.selectionClick();
     }
@@ -800,7 +844,8 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
       _syncBells();
     });
 
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final reduceMotion =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     if (_canUseHaptics(reduceMotion)) {
       HapticFeedback.lightImpact();
     }
@@ -886,7 +931,8 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
   }
 
   void _onSessionReentryStop() {
-    Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
   }
 
   void _onSessionReentryRepeat() {
@@ -921,12 +967,14 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
     _ticker?.cancel();
     _ticker = null;
 
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final reduceMotion =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     if (_canUseHaptics(reduceMotion)) {
       HapticFeedback.mediumImpact();
     }
 
-    _runtime.recordComplete(sessionId: _sessionId, elapsedSeconds: _elapsedSeconds);
+    _runtime.recordComplete(
+        sessionId: _sessionId, elapsedSeconds: _elapsedSeconds);
     _runtime.clearSessionRecovery(_sessionId);
     _persistState();
     setState(() {
@@ -937,7 +985,8 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
   void _goHome() {
     _ticker?.cancel();
     _runtime.clearSessionRecovery(_sessionId);
-    Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
   }
 
   void _persistState() {
@@ -956,7 +1005,8 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
   }
 
   void _emitStartHaptic() {
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final reduceMotion =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     if (_canUseHaptics(reduceMotion)) {
       HapticFeedback.mediumImpact();
     }
@@ -1099,32 +1149,266 @@ class SessionReflectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Phản chiếu phiên')),
+    final trend = _SessionReflectionTrend.fromTimeline(
+      sessionId: args.sessionId,
+      timeline: const SessionRuntime().timeline,
+    );
+
+    return CalmFeatureScaffold(
+      title: const Text('Phản hồi phiên'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'Phản chiếu phiên',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
+              'Sau phiên',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 12),
-            Text('Phiên ID: ${args.sessionId}'),
+            const SizedBox(height: 8),
+            const Text(
+              'Phản hồi cảm nhận nhẹ nhàng',
+              style: TextStyle(
+                  fontSize: 28, fontWeight: FontWeight.w700, height: 1.1),
+            ),
             const SizedBox(height: 24),
-            const Text('Bạn có thể thêm cảm nhận và hít thật chậm trước khi quay lại nhịp thở.'),
+            SectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Xu hướng phiên',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    trend.copy,
+                    key: const Key('session-reflection-trend'),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 16),
-            ElevatedButton(
+            const SectionCard(
+              child: Text(
+                'Tổng kết nhẹ: không đưa ra điểm số, không so sánh…',
+                key: Key('session-reflection-no-pressure'),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _BiofeedbackReflectionBlock(
+              healthPermissionGranted: args.healthPermissionGranted,
+              bio: args.bio,
+            ),
+            const SizedBox(height: 16),
+            DistressBoundary(
+              key: const Key('reflection-distress-boundary'),
+              onAction: () => _openSupportResourcesSheet(context),
+              child: const SizedBox.shrink(),
+            ),
+            const SizedBox(height: 16),
+            Text('Phiên ID: ${args.sessionId}'),
+            const SizedBox(height: 16),
+            PrimaryCTA(
+              buttonKey: const Key('session-reflection-return'),
+              label: 'Quay về Home',
               onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/home', (Route<dynamic> route) => false);
               },
-              child: const Text('Về Home'),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _openSupportResourcesSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const SupportResourcesSheet(),
+    );
+  }
+}
+
+class _SessionReflectionTrend {
+  const _SessionReflectionTrend(this.copy);
+
+  final String copy;
+
+  factory _SessionReflectionTrend.fromTimeline({
+    required String sessionId,
+    required List<SessionTimelineEvent> timeline,
+  }) {
+    final event = timeline.cast<SessionTimelineEvent?>().lastWhere(
+      (candidate) {
+        if (candidate == null ||
+            candidate.type != SessionTimelineEventType.sessionComplete) {
+          return false;
+        }
+        return candidate.payload[sessionIdTimelineKey] == sessionId;
+      },
+      orElse: () => null,
+    );
+
+    final rawElapsed = event?.payload[elapsedSecondsTimelineKey];
+    final elapsedSeconds = switch (rawElapsed) {
+      int() => rawElapsed,
+      num() => rawElapsed.toInt(),
+      _ => null,
+    };
+
+    if (elapsedSeconds == null || elapsedSeconds <= 0) {
+      return const _SessionReflectionTrend(
+        'Phiên này chưa có đủ dấu mốc, hãy xem đây như một ghi chú nhẹ về cảm nhận hiện tại.',
+      );
+    }
+
+    if (elapsedSeconds <= 45) {
+      return const _SessionReflectionTrend(
+        'Bạn đã chạm một khoảng dừng ngắn và đủ để nhận lại nhịp thở.',
+      );
+    }
+
+    if (elapsedSeconds <= 90) {
+      return const _SessionReflectionTrend(
+        'Bạn đã duy trì sự tĩnh tại ở một chu kỳ tương đối ổn định.',
+      );
+    }
+
+    return const _SessionReflectionTrend(
+      'Bạn đã ở lại lâu hơn với nhịp của mình, theo cách không cần đo đếm.',
+    );
+  }
+}
+
+class _BiofeedbackReflectionBlock extends StatelessWidget {
+  const _BiofeedbackReflectionBlock({
+    required this.healthPermissionGranted,
+    required this.bio,
+  });
+
+  final bool healthPermissionGranted;
+  final _BiofeedbackSnapshot? bio;
+
+  @override
+  Widget build(BuildContext context) {
+    final snapshot = bio;
+
+    if (!healthPermissionGranted || snapshot == null) {
+      return const SectionCard(
+        child: Text(
+          'Lúc này dữ liệu sinh trắc chưa sẵn sàng, nên phần phản hồi giữ ở bản cơ bản và quay về cảm nhận của bạn.',
+          key: Key('session-reflection-biofeedback-fallback'),
+        ),
+      );
+    }
+
+    if (!snapshot.highConfidence) {
+      return const SectionCard(
+        child: Text(
+          'Tín hiệu sinh trắc lúc này chưa đủ rõ; hãy quay lại với cảm nhận của bạn, không cần đánh giá phiên này.',
+          key: Key('session-reflection-biofeedback-low'),
+        ),
+      );
+    }
+
+    return SectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Phản hồi nâng cao từ tín hiệu sinh trắc',
+            key: Key('session-reflection-biofeedback-title'),
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Nhịp tim ${snapshot.heartRateTone}; chuyển động ${snapshot.movementTone}; nhịp hồi phục ${snapshot.hrvDirection}. đây là chiều hướng, không phải chỉ số',
+            key: const Key('session-reflection-biofeedback-body'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BiofeedbackSnapshot {
+  const _BiofeedbackSnapshot({
+    required this.heartRateBpm,
+    required this.movementLevel,
+    required this.hrvValue,
+    required this.confidence,
+  });
+
+  final double heartRateBpm;
+  final double movementLevel;
+  final double hrvValue;
+  final double confidence;
+
+  bool get highConfidence => confidence >= 0.6;
+
+  String get heartRateTone {
+    if (heartRateBpm <= 70) {
+      return 'ổn định';
+    }
+    if (heartRateBpm <= 90) {
+      return 'chưa cao';
+    }
+    return 'hơi dồn dập';
+  }
+
+  String get movementTone {
+    if (movementLevel <= 0.2) {
+      return 'rất tĩnh';
+    }
+    if (movementLevel <= 0.6) {
+      return 'dịu dịu';
+    }
+    return 'có dao động nhẹ';
+  }
+
+  String get hrvDirection {
+    if (hrvValue >= 28) {
+      return 'ổn định hơn';
+    }
+    return 'đang hồi dần';
+  }
+
+  static _BiofeedbackSnapshot? fromDynamic(Object? value) {
+    if (value is _BiofeedbackSnapshot) {
+      return value;
+    }
+    if (value is! Map) {
+      return null;
+    }
+
+    final heartRateBpm = _readDouble(value['heartRateBpm']);
+    final movementLevel = _readDouble(value['movementLevel']);
+    final hrvValue = _readDouble(value['hrvValue']);
+    final confidence = _readDouble(value['confidence']);
+
+    if (heartRateBpm == null ||
+        movementLevel == null ||
+        hrvValue == null ||
+        confidence == null) {
+      return null;
+    }
+
+    return _BiofeedbackSnapshot(
+      heartRateBpm: heartRateBpm,
+      movementLevel: movementLevel,
+      hrvValue: hrvValue,
+      confidence: confidence,
+    );
+  }
+
+  static double? _readDouble(Object? value) {
+    if (value is num) {
+      return value.toDouble();
+    }
+    return null;
   }
 }
 

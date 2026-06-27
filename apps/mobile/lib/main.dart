@@ -83,7 +83,8 @@ class ElaroMedApp extends StatelessWidget {
         );
     }
 
-    final reentryMatch = RegExp(r'^/session/(.+)/re-entry$').firstMatch(canonicalRoute);
+    final reentryMatch =
+        RegExp(r'^/session/(.+)/re-entry$').firstMatch(canonicalRoute);
     if (reentryMatch != null) {
       final reentryArgs = SessionReEntryArgs.fromDynamic(
         settings.arguments,
@@ -102,7 +103,8 @@ class ElaroMedApp extends StatelessWidget {
       );
     }
 
-    final reflectionMatch = RegExp(r'^/session/(.+)/reflection$').firstMatch(canonicalRoute);
+    final reflectionMatch =
+        RegExp(r'^/session/(.+)/reflection$').firstMatch(canonicalRoute);
     if (reflectionMatch != null) {
       final reflectionArgs = SessionReflectionArgs.fromDynamic(
         settings.arguments,
@@ -114,6 +116,8 @@ class ElaroMedApp extends StatelessWidget {
           args: SessionReflectionArgs(
             sessionId: Uri.decodeComponent(reflectionMatch.group(1)!),
             sessionRoute: reflectionArgs.sessionRoute,
+            healthPermissionGranted: reflectionArgs.healthPermissionGranted,
+            bio: reflectionArgs.bio,
           ),
         ),
       );

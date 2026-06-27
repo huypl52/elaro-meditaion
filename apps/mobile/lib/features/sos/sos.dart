@@ -7,6 +7,8 @@ import 'package:elaro_mobile/runtime/dev_gate.dart';
 import 'package:elaro_mobile/runtime/session.dart';
 import 'package:elaro_mobile/runtime/sos_runtime.dart';
 
+import '../../components/distress_boundary.dart';
+
 class SosEntryScreen extends StatefulWidget {
   const SosEntryScreen({super.key, required this.args});
 
@@ -119,7 +121,7 @@ class _SosEntryScreenState extends State<SosEntryScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => const _SupportResourcesSheet(),
+      builder: (_) => const SupportResourcesSheet(),
     );
   }
 }
@@ -296,7 +298,7 @@ class _SosActiveScreenState extends State<SosActiveScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => const _SupportResourcesSheet(),
+      builder: (_) => const SupportResourcesSheet(),
     );
   }
 }
@@ -358,63 +360,6 @@ class BreathingCircle extends StatelessWidget {
             const SizedBox(height: 4),
             Text('Thay đổi trong $secondsRemaining giây'),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class DistressBoundary extends StatelessWidget {
-  const DistressBoundary({
-    super.key,
-    required this.onAction,
-    required this.child,
-  });
-
-  final VoidCallback onAction;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Text(
-          'Đây là công cụ tự chăm sóc nhẹ nhàng, không thay thế hỗ trợ chuyên môn…',
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 12),
-        FilledButton(
-          onPressed: onAction,
-          child: const Text('Tìm hỗ trợ'),
-        ),
-        child,
-      ],
-    );
-  }
-}
-
-class _SupportResourcesSheet extends StatelessWidget {
-  const _SupportResourcesSheet();
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        child: SizedBox(
-          height: 260,
-          child: ListView(
-            children: const [
-              Text('Tài nguyên hỗ trợ', style: TextStyle(fontWeight: FontWeight.w700)),
-              SizedBox(height: 8),
-              Text('Hotline: 111'),
-              SizedBox(height: 4),
-              Text('Hỗ trợ chuyên môn: 1900 123 456'),
-              SizedBox(height: 4),
-              Text('Người tin cậy: liên hệ người thân/nhóm gần bạn.'),
-            ],
-          ),
         ),
       ),
     );

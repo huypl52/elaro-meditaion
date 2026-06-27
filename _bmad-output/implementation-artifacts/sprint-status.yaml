@@ -1,5 +1,5 @@
 # generated: 2026-06-24T08:22:19Z
-# last_updated: 2026-06-27T15:34:13+07:00
+# last_updated: 2026-06-27T15:52:22+07:00
 # project: meditation-community
 # project_key: NOKEY
 # tracking_system: file-system
@@ -24,7 +24,7 @@
 #   - done: Retrospective has been completed
 
 generated: 2026-06-24T08:22:19Z
-last_updated: 2026-06-27T15:34:13+07:00
+last_updated: 2026-06-27T15:52:22+07:00
 project: meditation-community
 project_key: NOKEY
 tracking_system: file-system
@@ -32,7 +32,7 @@ story_location: /Users/lee/code/projects/elaro-high/_bmad-output/implementation-
 
 development_status:
   epic-1: done
-  epic-2: done
+  epic-2: in-progress
   epic-3: in-progress
   epic-4: backlog
   epic-5: backlog
@@ -45,11 +45,13 @@ development_status:
   2-2-minimal-timer-v-mindfulness-bell-c-b-n: done
   2-3-gentle-re-entry-sau-phi-n: done
   2-4-session-runtime-h-tr-noise-aware-mode-baseline: done
+  2-5-environmental-context-tags-va-soundscape-suggestion: ready-for-dev
   3-1-growth-map-kh-ng-d-ng-streak-pressure: done
   3-2-voice-journal-sau-phi-n: done
   3-3-personal-ritual-builder-v-replay: done
-  3-4-session-reflection-narrative-baseline: backlog
-  3-5-reflection-n-ng-cao-v-i-biofeedback-khi-c-quy-n: backlog
+  3-4-session-reflection-narrative-baseline: done
+  3-5-reflection-n-ng-cao-v-i-biofeedback-khi-c-quy-n: done
+  3-6-session-reflection-dashboard-va-empathetic-insight: ready-for-dev
   4-1-taxonomy-content-theo-need-context-duration-intensity: backlog
   4-2-transition-modes-v-suggested-session-card: backlog
   4-3-curated-packs-v-labeling-r-r-ng: backlog
@@ -64,6 +66,7 @@ development_status:
   6-4-recovery-exit-core-cho-high-stress-flows: backlog
   6-5-error-envelope-ids-sync-conflict-safety: backlog
   6-6-accessibility-baseline-v-haptic-first-runtime: backlog
+  6-7-consent-boundary-cho-ai-va-sensing-summaries: ready-for-dev
   1-retrospective: done
   2-retrospective: done
   3-retrospective: optional
