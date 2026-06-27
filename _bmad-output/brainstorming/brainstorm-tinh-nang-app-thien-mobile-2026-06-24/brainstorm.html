@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brainstorm - Meditation App</title>
+  <style>
+    :root {
+      --bg: #f5efe3;
+      --ink: #17312c;
+      --muted: #5b6d67;
+      --card: rgba(255,255,255,0.68);
+      --line: rgba(23,49,44,0.12);
+      --sage: #97b7a2;
+      --sand: #e5d3b3;
+      --clay: #d28a68;
+      --sky: #b8d6de;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Iowan Old Style", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.75), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(184,214,222,0.55), transparent 28%),
+        linear-gradient(135deg, #efe4d1, #f8f5ee 45%, #e9f0ec 100%);
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 40px 20px 80px; }
+    .hero {
+      display: grid; gap: 18px; padding: 28px; border: 1px solid var(--line); border-radius: 28px;
+      background: linear-gradient(160deg, rgba(255,255,255,0.72), rgba(255,255,255,0.48));
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(23,49,44,0.08);
+    }
+    .eyebrow { text-transform: uppercase; letter-spacing: 0.18em; font-size: 12px; color: var(--muted); }
+    h1 { margin: 0; font-size: clamp(34px, 6vw, 68px); line-height: 0.95; font-weight: 600; }
+    .sub { max-width: 780px; font-size: 18px; line-height: 1.6; color: var(--muted); }
+    .pillrow { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pill { padding: 10px 14px; border-radius: 999px; background: rgba(151,183,162,0.18); border: 1px solid rgba(151,183,162,0.32); font-size: 14px; }
+    .section { margin-top: 28px; }
+    .section h2 { font-size: 30px; margin: 0 0 14px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .card {
+      padding: 18px; border-radius: 22px; background: var(--card); border: 1px solid var(--line);
+      min-height: 220px; box-shadow: 0 8px 28px rgba(23,49,44,0.06);
+    }
+    .card h3 { margin: 0 0 10px; font-size: 22px; }
+    .card ul { margin: 0; padding-left: 18px; line-height: 1.55; }
+    .lanes { display: grid; gap: 16px; }
+    .lane {
+      padding: 18px 20px; border-radius: 24px; border: 1px solid var(--line);
+      background: linear-gradient(130deg, rgba(255,255,255,0.65), rgba(255,255,255,0.38));
+    }
+    .lane strong { display: inline-block; margin-bottom: 10px; font-size: 20px; }
+    .lane p { margin: 0; line-height: 1.65; color: var(--muted); }
+    .highlight { color: var(--clay); font-weight: 700; }
+    .footer { margin-top: 32px; font-size: 15px; color: var(--muted); }
+    @media (max-width: 700px) {
+      .wrap { padding: 22px 14px 60px; }
+      .hero { padding: 22px; border-radius: 22px; }
+      .section h2 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Brainstorm keepsake / 2026-06-24</div>
+      <h1>Meditation app không nên là thư viện audio đẹp hơn.<br/>Nó nên là <span class="highlight">hệ điều hành dịu thần kinh</span> cho ngày sống thật.</h1>
+      <p class="sub">
+        Từ bản đặc tả ban đầu, hướng đi mạnh nhất không nằm ở việc thêm nhiều bài thiền hơn, mà ở việc giảm ma sát chọn lựa,
+        tăng can thiệp đúng khoảnh khắc, và giữ cộng đồng ở mức hiện diện an toàn thay vì social pressure.
+      </p>
+      <div class="pillrow">
+        <div class="pill">Flutter-first mobile UX</div>
+        <div class="pill">On-device AI khi có thể</div>
+        <div class="pill">Low cognitive load</div>
+        <div class="pill">Calm community, not noisy social</div>
+        <div class="pill">Haptic + audio + context</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>4 bets đáng đầu tư nhất</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>1. Adaptive Daily Path</h3>
+          <ul>
+            <li>Màn hình chính chỉ đưa ra 1 đề xuất tốt nhất theo giờ và trạng thái.</li>
+            <li>Nhóm nhu cầu kép như “mệt nhưng đầu căng”.</li>
+            <li>Nút “đỡ phải chọn” để app tự quyết giúp người dùng.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>2. SOS + Haptic Rescue</h3>
+          <ul>
+            <li>60 giây can thiệp bằng rung theo nhịp thở, dùng được cả khi không nghe audio.</li>
+            <li>Morph bài thiền giữa chừng nếu người dùng không vào được trạng thái.</li>
+            <li>Khuyến nghị lộ trình hồi phục nếu SOS bị dùng lặp lại.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>3. Ritualized Calm Community</h3>
+          <ul>
+            <li>Live Sangha như bầu trời cùng thở, không biến thành feed xã hội.</li>
+            <li>Mindful nudges định dạng sẵn, không chat tự do.</li>
+            <li>Vườn yên lặng và khung giờ thiền chung tạo cảm giác thuộc về.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>4. Private Context Engine</h3>
+          <ul>
+            <li>Đo tiếng ồn cục bộ để chọn sound shield phù hợp.</li>
+            <li>Voice journal distill trên máy, không ép lưu transcript.</li>
+            <li>Health data chỉ dùng để gợi ý và phản chiếu, không gamify.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Feature lanes để đi từ MVP đến khác biệt</h2>
+      <div class="lanes">
+        <div class="lane">
+          <strong>Lane A: MVP rất gọn nhưng đủ khác</strong>
+          <p>Single-path home, thư viện theo nhu cầu, SOS 60 giây, timer tối giản, journal giọng nói ngắn, growth map không streak. Đây là bản có thể ship sớm bằng Flutter với ít rủi ro.</p>
+        </div>
+        <div class="lane">
+          <strong>Lane B: Signature experience</strong>
+          <p>Adaptive Daily Path, stack thiền cá nhân, haptic breathing, sound shield theo môi trường, ritual start bằng long-press 3 giây, màn hình khóa bắt đầu nhanh. Đây là phần tạo bản sắc sản phẩm.</p>
+        </div>
+        <div class="lane">
+          <strong>Lane C: Calm social</strong>
+          <p>Live Sangha, vườn yên lặng, khung giờ tĩnh toàn cầu, mindful nudges không chat, gia đình/cặp đôi thiền cùng. Điểm quan trọng là giữ sự kết nối mà không tạo áp lực hiển thị thành tích.</p>
+        </div>
+        <div class="lane">
+          <strong>Lane D: Context + AI riêng tư</strong>
+          <p>Classify âm thanh tại chỗ, distill journal on-device, đọc nhẹ Health/Fit, settling curve, AI companion check-in cực ngắn. Chỉ nên mở dần sau khi core UX đã chứng minh retention.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Những insight quan trọng nhất</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Người dùng không thiếu nội dung</h3>
+          <ul>
+            <li>Họ thiếu cách vào đúng bài đúng lúc, với ít quyết định nhất.</li>
+            <li>UX phải giảm tải trước khi tăng tính năng.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Khác biệt nằm ở state transition</h3>
+          <ul>
+            <li>Trước thiền, trong thiền, sau thiền đều cần cầu nối mềm.</li>
+            <li>App giỏi là app giúp người dùng “đáp đất” tốt hơn.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Cộng đồng nên là khí hậu, không là sân khấu</h3>
+          <ul>
+            <li>Ẩn danh, hiện diện, không leaderboard.</li>
+            <li>Cảm giác có người cùng thở mạnh hơn tính năng follow/friend.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>AI chỉ đáng giá khi vô hình</h3>
+          <ul>
+            <li>AI không nên là chatbot lộ thiên ngay từ đầu.</li>
+            <li>Giá trị thật là cá nhân hóa ngữ cảnh, distill cảm xúc, và rút ngắn đường vào trạng thái bình ổn.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <p class="footer">Nếu cần chuyển tiếp sang PRD hoặc roadmap, nên chốt tiếp: persona ưu tiên, edge devices mục tiêu, và lane nào là MVP chính thức.</p>
+  </div>
+</body>
+</html>
