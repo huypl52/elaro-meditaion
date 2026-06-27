@@ -21,6 +21,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('session-start-button')));
+    await tester.pump(const Duration(milliseconds: 1100));
     await tester.pumpAndSettle();
 
     expect(find.text('manual_checkin: low'), findsOneWidget);
@@ -36,6 +37,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('home-body-cta-0')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('session-start-button')));
+    await tester.pump(const Duration(milliseconds: 1100));
     await tester.pumpAndSettle();
 
     expect(find.text('manual_checkin: null'), findsOneWidget);

@@ -16,13 +16,31 @@ class SessionRuntime {
   SessionStartEvent startSession({
     required String sessionRoute,
     required CheckinState? manualCheckin,
+    required int sessionDurationSeconds,
+    required String startupMode,
   }) {
-    return SessionStartEvent(
+    final event = SessionStartEvent(
       sessionRoute: sessionRoute,
       createdAt: DateTime.now().toUtc(),
       manualCheckin: manualCheckin?.value,
-      payload: const <String, Object?>{},
+      payload: <String, Object?>{
+        sessionDurationTimelineKey: sessionDurationSeconds,
+        startupModeTimelineKey: startupMode,
+      },
     );
+
+    _timeline.add(
+      SessionTimelineEvent(
+        type: SessionTimelineEventType.sessionStart,
+        at: event.createdAt,
+        payload: <String, Object?>{
+          'session_route': event.sessionRoute,
+          ...event.payload,
+        },
+      ),
+    );
+
+    return event;
   }
 
   void recordSosInterrupt({required String reason, DateTime? at}) {

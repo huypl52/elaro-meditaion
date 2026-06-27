@@ -1,6 +1,9 @@
 const String manualCheckinTimelineKey = 'manual_checkin';
+const String sessionDurationTimelineKey = 'duration_seconds';
+const String startupModeTimelineKey = 'startup_mode';
 
 enum SessionTimelineEventType {
+  sessionStart('session_start'),
   sosInterrupt('sos_interrupt'),
   sosTimeoutExit('sos_timeout_exit');
 
