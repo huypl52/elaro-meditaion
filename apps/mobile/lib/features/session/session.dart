@@ -1447,6 +1447,12 @@ class SessionReflectionScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+            DistressBoundary(
+              key: const Key('reflection-distress-boundary'),
+              onAction: () => _openSupportResourcesSheet(context),
+              child: const SizedBox.shrink(),
+            ),
+            const SizedBox(height: 16),
             _BiofeedbackReflectionBlock(
               healthPermissionGranted: args.healthPermissionGranted,
               bio: args.bio,
@@ -1455,12 +1461,6 @@ class SessionReflectionScreen extends StatelessWidget {
             _ReflectionDashboardBlock(
               args: args,
               trend: trend,
-            ),
-            const SizedBox(height: 16),
-            DistressBoundary(
-              key: const Key('reflection-distress-boundary'),
-              onAction: () => _openSupportResourcesSheet(context),
-              child: const SizedBox.shrink(),
             ),
             const SizedBox(height: 16),
             Text('Phiên ID: ${args.sessionId}'),
