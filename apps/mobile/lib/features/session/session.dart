@@ -102,6 +102,70 @@ class SessionActiveArgs {
   final SessionTimerState timerState;
 }
 
+class SessionReEntryArgs {
+  const SessionReEntryArgs({
+    required this.sessionId,
+    required this.sessionRoute,
+    this.manualCheckin,
+    this.hasMicrophone = true,
+  });
+
+  final String sessionId;
+  final String sessionRoute;
+  final CheckinState? manualCheckin;
+  final bool hasMicrophone;
+
+  factory SessionReEntryArgs.fromDynamic(Object? args, {required String fallbackSessionRoute}) {
+    if (args is SessionReEntryArgs) {
+      return args;
+    }
+
+    if (args is Map) {
+      return SessionReEntryArgs(
+        sessionId: args['sessionId'] as String? ?? '',
+        sessionRoute: args['sessionRoute'] as String? ?? fallbackSessionRoute,
+        manualCheckin: CheckinState.fromName(args['manualCheckin'] as String?),
+        hasMicrophone: args['hasMicrophone'] as bool? ?? true,
+      );
+    }
+
+    return SessionReEntryArgs(
+      sessionId: '',
+      sessionRoute: fallbackSessionRoute,
+      manualCheckin: null,
+      hasMicrophone: true,
+    );
+  }
+}
+
+class SessionReflectionArgs {
+  const SessionReflectionArgs({
+    required this.sessionId,
+    required this.sessionRoute,
+  });
+
+  final String sessionId;
+  final String sessionRoute;
+
+  factory SessionReflectionArgs.fromDynamic(Object? args, {required String fallbackSessionRoute}) {
+    if (args is SessionReflectionArgs) {
+      return args;
+    }
+
+    if (args is Map) {
+      return SessionReflectionArgs(
+        sessionId: args['sessionId'] as String? ?? '',
+        sessionRoute: args['sessionRoute'] as String? ?? fallbackSessionRoute,
+      );
+    }
+
+    return SessionReflectionArgs(
+      sessionId: '',
+      sessionRoute: fallbackSessionRoute,
+    );
+  }
+}
+
 class SessionStartScreen extends StatefulWidget {
   const SessionStartScreen({super.key, required this.args});
 
@@ -269,6 +333,7 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
   bool _isPaused = false;
   bool _isComplete = false;
   bool _showRecoveryCard = false;
+  bool _showSessionPostNudge = true;
 
   Timer? _ticker;
   DateTime? _lastTick;
@@ -424,12 +489,9 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
               ),
             if (_showRecoveryCard) const SizedBox(height: 12),
             if (_isComplete) ...[
-              Text(
-                'Phiên đã kết thúc.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              _buildActiveReentryCard(),
               const SizedBox(height: 12),
+              _buildSessionActiveMindfulNudge(context),
             ] else if (_isPaused) ...[
               GhostTextButton(
                 key: const Key('session-resume-btn'),
@@ -444,17 +506,19 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
                 child: const Text('Tạm dừng'),
               ),
             ],
-            GhostTextButton(
-              onPressed: _onManualExit,
-              label: 'Kết thúc sớm',
-              key: const Key('session-manual-exit-btn'),
-            ),
-            const SizedBox(height: 8),
-            FilledButton(
-              key: const Key('session-return-home'),
-              onPressed: _goHome,
-              child: const Text('Kết thúc và về Home'),
-            ),
+            if (!_isComplete) ...[
+              GhostTextButton(
+                onPressed: _onManualExit,
+                label: 'Kết thúc sớm',
+                key: const Key('session-manual-exit-btn'),
+              ),
+              const SizedBox(height: 8),
+              FilledButton(
+                key: const Key('session-return-home'),
+                onPressed: _goHome,
+                child: const Text('Kết thúc và về Home'),
+              ),
+            ],
             const SizedBox(height: 16),
             if (DevGate.enabled)
               DevSection(
@@ -504,6 +568,60 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
       }
     }
     return -1;
+  }
+
+  Widget _buildActiveReentryCard() {
+    return _buildReentryCard(
+      context: context,
+      onStop: _onSessionReentryStop,
+      onRepeat: _onSessionReentryRepeat,
+      onFollowup: _onSessionReentryFollowup,
+    );
+  }
+
+  Widget _buildSessionActiveMindfulNudge(BuildContext context) {
+    if (!_showSessionPostNudge) {
+      return const SizedBox.shrink();
+    }
+
+    return Dismissible(
+      key: const Key('session-active-mindful-nudge-card'),
+      onDismissed: (_) {
+        setState(() {
+          _showSessionPostNudge = false;
+        });
+      },
+      child: Card(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Nhắc nhẹ tiếp theo', style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 6),
+              Text(
+                'Nếu bạn muốn giữ nhịp nhẹ, có thể chọn một phiên ngắn nữa.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  key: const Key('session-active-mindful-nudge-skip'),
+                  onPressed: () {
+                    setState(() {
+                      _showSessionPostNudge = false;
+                    });
+                  },
+                  child: const Text('Bỏ qua hôm nay'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   bool _canUseHaptics(bool reduceMotion) {
@@ -634,6 +752,34 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
     _goHome();
   }
 
+  void _onSessionReentryStop() {
+    Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+  }
+
+  void _onSessionReentryRepeat() {
+    Navigator.of(context).pushNamed(
+      '/session/start',
+      arguments: SessionStartArgs(
+        sessionRoute: widget.args.startEvent.sessionRoute,
+        manualCheckin: widget.args.timerState.manualContext,
+        simulateNoMicrophone: !widget.args.timerState.hasMicrophone,
+        simulateLowConfidence: widget.args.timerState.noiseConfidence != null &&
+            widget.args.timerState.noiseConfidence! < SessionTimerState.lowConfidenceThreshold,
+      ),
+    );
+  }
+
+  void _onSessionReentryFollowup() {
+    final encodedSessionId = Uri.encodeComponent(_sessionId);
+    Navigator.of(context).pushNamed(
+      '/session/$encodedSessionId/reflection',
+      arguments: SessionReflectionArgs(
+        sessionId: _sessionId,
+        sessionRoute: widget.args.startEvent.sessionRoute,
+      ),
+    );
+  }
+
   void _complete() {
     if (_isComplete) {
       return;
@@ -686,6 +832,166 @@ class _SessionActiveScreenState extends State<SessionActiveScreen> with WidgetsB
 
   bool _mountedOrActive() {
     return mounted && !_isComplete && !_isPaused;
+  }
+}
+
+Widget _buildReentryCard({
+  required BuildContext context,
+  required VoidCallback onStop,
+  required VoidCallback onRepeat,
+  required VoidCallback onFollowup,
+}) {
+  return Card(
+    key: const Key('session-reentry-card'),
+    color: Theme.of(context).colorScheme.surfaceContainerLowest,
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Kết thúc nhẹ nhàng',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Re-entry sau phiên',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Lời nhắc nhẹ: thở chậm 1 nhịp rồi chọn bước kế tiếp.',
+            style: TextStyle(height: 1.3),
+          ),
+          const SizedBox(height: 12),
+          TertiaryStackCTA(
+            onStop: onStop,
+            onRepeat: onRepeat,
+            onFollowup: onFollowup,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class TertiaryStackCTA extends StatelessWidget {
+  const TertiaryStackCTA({
+    super.key,
+    required this.onStop,
+    required this.onRepeat,
+    required this.onFollowup,
+  });
+
+  final VoidCallback onStop;
+  final VoidCallback onRepeat;
+  final VoidCallback onFollowup;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        FilledButton(
+          key: const Key('session-reentry-stop'),
+          onPressed: onStop,
+          child: const Text('Dừng & về Home'),
+        ),
+        const SizedBox(height: 8),
+        FilledButton(
+          key: const Key('session-reentry-repeat'),
+          onPressed: onRepeat,
+          child: const Text('Lặp lại'),
+        ),
+        const SizedBox(height: 8),
+        FilledButton(
+          key: const Key('session-reentry-followup'),
+          onPressed: onFollowup,
+          child: const Text('Phản chiếu phiên'),
+        ),
+      ],
+    );
+  }
+}
+
+class SessionReEntryScreen extends StatelessWidget {
+  const SessionReEntryScreen({
+    required this.args,
+  });
+
+  final SessionReEntryArgs args;
+
+  @override
+  Widget build(BuildContext context) {
+    final sessionId = args.sessionId.isEmpty ? '' : args.sessionId;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Re-entry')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: _buildReentryCard(
+          context: context,
+          onStop: () => Navigator.of(context).pushNamedAndRemoveUntil(
+            '/home',
+            (Route<dynamic> route) => false,
+          ),
+          onRepeat: () => Navigator.of(context).pushNamed(
+            '/session/start',
+            arguments: SessionStartArgs(
+              sessionRoute: args.sessionRoute,
+              manualCheckin: args.manualCheckin,
+              simulateNoMicrophone: !args.hasMicrophone,
+            ),
+          ),
+          onFollowup: () {
+            final encodedSessionId = Uri.encodeComponent(sessionId);
+            Navigator.of(context).pushNamed(
+              '/session/$encodedSessionId/reflection',
+              arguments: SessionReflectionArgs(
+                sessionId: args.sessionId,
+                sessionRoute: args.sessionRoute,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class SessionReflectionScreen extends StatelessWidget {
+  const SessionReflectionScreen({
+    required this.args,
+  });
+
+  final SessionReflectionArgs args;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Phản chiếu phiên')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Phản chiếu phiên',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 12),
+            Text('Phiên ID: ${args.sessionId}'),
+            const SizedBox(height: 24),
+            const Text('Bạn có thể thêm cảm nhận và hít thật chậm trước khi quay lại nhịp thở.'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+              },
+              child: const Text('Về Home'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

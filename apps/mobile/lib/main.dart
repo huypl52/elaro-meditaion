@@ -65,6 +65,36 @@ class ElaroMedApp extends StatelessWidget {
         );
     }
 
+    final reentryMatch = RegExp(r'^/session/(.+)/re-entry$').firstMatch(canonicalRoute);
+    if (reentryMatch != null) {
+      final reentryArgs = SessionReEntryArgs.fromDynamic(settings.arguments, fallbackSessionRoute: '/session/short-breath');
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (_) => SessionReEntryScreen(
+          args: SessionReEntryArgs(
+            sessionId: Uri.decodeComponent(reentryMatch.group(1)!),
+            sessionRoute: reentryArgs.sessionRoute,
+            manualCheckin: reentryArgs.manualCheckin,
+            hasMicrophone: reentryArgs.hasMicrophone,
+          ),
+        ),
+      );
+    }
+
+    final reflectionMatch = RegExp(r'^/session/(.+)/reflection$').firstMatch(canonicalRoute);
+    if (reflectionMatch != null) {
+      final reflectionArgs = SessionReflectionArgs.fromDynamic(settings.arguments, fallbackSessionRoute: '/session/short-breath');
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (_) => SessionReflectionScreen(
+          args: SessionReflectionArgs(
+            sessionId: Uri.decodeComponent(reflectionMatch.group(1)!),
+            sessionRoute: reflectionArgs.sessionRoute,
+          ),
+        ),
+      );
+    }
+
     return MaterialPageRoute(
       settings: settings,
       builder: (_) => _TabScaffold(selectedRoute: '/home'),
