@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SOS: Just Breathe</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config injected from Design System -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary": "#003733",
+                    "primary-fixed": "#cfeacc",
+                    "on-tertiary-fixed-variant": "#5b4221",
+                    "secondary": "#98d1ca",
+                    "tertiary-fixed-dim": "#e5c095",
+                    "surface": "#0f1512",
+                    "primary": "#b7d1b4",
+                    "on-error": "#690005",
+                    "background": "#0f1512",
+                    "surface-container-highest": "#303633",
+                    "surface-container": "#1b211e",
+                    "error": "#ffb4ab",
+                    "inverse-primary": "#4d644d",
+                    "outline": "#8d928a",
+                    "inverse-surface": "#dee4df",
+                    "on-secondary-container": "#8ac3bc",
+                    "surface-container-high": "#252b28",
+                    "on-primary": "#203522",
+                    "surface-container-lowest": "#0a0f0d",
+                    "surface-variant": "#303633",
+                    "on-secondary-fixed-variant": "#114f4a",
+                    "on-primary-fixed-variant": "#364c37",
+                    "on-error-container": "#ffdad6",
+                    "inverse-on-surface": "#2c322e",
+                    "secondary-fixed": "#b4eee6",
+                    "tertiary-fixed": "#ffddb6",
+                    "on-tertiary-fixed": "#2a1800",
+                    "on-tertiary": "#422c0d",
+                    "secondary-fixed-dim": "#98d1ca",
+                    "secondary-container": "#15524c",
+                    "error-container": "#93000a",
+                    "on-surface": "#dee4df",
+                    "surface-tint": "#b4cdb1",
+                    "on-tertiary-container": "#563d1d",
+                    "on-primary-fixed": "#0b200e",
+                    "on-primary-container": "#314732",
+                    "surface-dim": "#0f1512",
+                    "primary-fixed-dim": "#b4cdb1",
+                    "primary-container": "#9cb59a",
+                    "outline-variant": "#434842",
+                    "on-secondary-fixed": "#00201d",
+                    "surface-container-low": "#171d1a",
+                    "on-surface-variant": "#c3c8bf",
+                    "on-background": "#dee4df",
+                    "tertiary": "#e9c498",
+                    "surface-bright": "#343b37",
+                    "tertiary-container": "#cba97f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": [
+                            "Newsreader"
+                    ],
+                    "display": [
+                            "Newsreader"
+                    ],
+                    "body": [
+                            "Inter"
+                    ],
+                    "label": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {}
+    },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Gentle breathing animation for the central button's aura */
+        @keyframes gentle-breath {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.1; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+        .animate-breathe {
+            animation: gentle-breath 4s ease-in-out infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-[884px] flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- 
+      TopAppBar: Rendered strictly per JSON commands for structure and style.
+      Context: "Calm Space" header is styled as a premium anchor.
+    -->
+<header class="fixed top-0 w-full z-50 bg-background dark:bg-background flex items-center justify-between px-5 h-16">
+<button class="text-primary dark:text-primary hover:bg-surface-container-low dark:hover:bg-surface-container-low active:scale-95 duration-200 transition-colors p-2 -ml-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline text-headline-sm tracking-tight text-primary dark:text-primary font-bold text-xl">Calm Space</h1>
+<button class="text-primary dark:text-primary hover:bg-surface-container-low dark:hover:bg-surface-container-low active:scale-95 duration-200 transition-colors p-2 -mr-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">emergency_home</span>
+</button>
+</header>
+<!-- 
+      Main Canvas
+      BottomNav is SUPPRESSED per rules: "Automatic Suppression... Linear/Transactional... Task-Focused" 
+      to prioritize the canvas and focus on the immediate calm exercise.
+    -->
+<main class="flex-grow flex flex-col items-center justify-center px-6 pt-20 pb-12 w-full max-w-md mx-auto relative z-10">
+<!-- Header & Empathy Text -->
+<div class="text-center mb-10 space-y-4 w-full animate-[fadeIn_1s_ease-out]">
+<h2 class="font-headline text-4xl sm:text-5xl text-on-background tracking-tight font-medium">Just Breathe</h2>
+<p class="font-body text-on-surface-variant text-lg px-4 leading-relaxed max-w-[280px] mx-auto">
+                We are here with you.<br/>Take a moment to settle.
+            </p>
+</div>
+<!-- The Focal Point: Large SOS Button -->
+<div class="relative flex items-center justify-center mb-14 w-full">
+<!-- Atmospheric Glow / Aura -->
+<div class="absolute inset-0 rounded-full bg-tertiary-container/20 blur-2xl animate-breathe pointer-events-none w-72 h-72 mx-auto"></div>
+<!-- Core Interactive Button -->
+<button class="relative z-10 w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-tertiary-container text-on-tertiary-container flex flex-col items-center justify-center gap-6 transition-all active:scale-[0.97] duration-300 shadow-[0_8px_32px_rgba(203,169,127,0.15)] hover:shadow-[0_12px_40px_rgba(203,169,127,0.25)] border border-tertiary/20 group"><span class="material-symbols-outlined text-6xl opacity-90 transition-transform duration-500 group-hover:scale-110" style="font-variation-settings: 'wght' 200;">air</span><div class="flex flex-col items-center gap-1"><span class="font-headline text-4xl font-bold tracking-tight">60 Seconds</span><span class="font-body text-lg opacity-80">of Calm</span></div></button>
+</div>
+<!-- Preferences Bento Card -->
+<div class="w-full bg-surface-container rounded-[28px] p-5 space-y-1 shadow-sm border border-surface-bright/10 mb-8">
+<!-- Toggle: Gentle Haptics -->
+<label class="flex items-center justify-between p-3 rounded-2xl hover:bg-surface-container-high transition-colors cursor-pointer group"><div class="flex items-center gap-4 text-on-background"><div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">vibration</span></div><div class="flex flex-col"><div class="flex items-center gap-2"><span class="font-label font-medium text-base">Gentle Haptics</span><span class="text-[10px] uppercase tracking-widest bg-primary/20 text-primary px-1.5 py-0.5 rounded-full font-bold">Recommended</span></div><p class="text-xs text-on-surface-variant">Silent grounding through touch</p></div></div><div class="relative inline-flex items-center"><input checked="" class="sr-only peer" type="checkbox" value=""/><div class="w-12 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant peer-checked:after:bg-on-primary-container after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container shadow-inner"></div></div></label>
+<div class="h-px w-full bg-surface-variant/50 ml-14"></div>
+<!-- Toggle: Quiet Audio -->
+<label class="flex items-center justify-between p-3 rounded-2xl hover:bg-surface-container-high transition-colors cursor-pointer group"><div class="flex items-center gap-4 text-on-background"><div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">graphic_eq</span></div><div class="flex flex-col"><div class="flex items-center gap-2"><span class="font-label font-medium text-base">Quiet Audio</span><span class="text-[10px] uppercase tracking-widest bg-surface-variant text-on-surface-variant px-1.5 py-0.5 rounded-full font-bold">Optional</span></div><p class="text-xs text-on-surface-variant">Soft ambient soundscape</p></div></div><div class="relative inline-flex items-center"><input checked="" class="sr-only peer" type="checkbox" value=""/><div class="w-12 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant peer-checked:after:bg-on-primary-container after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container shadow-inner"></div></div></label>
+</div>
+<!-- Early Exit Action -->
+<button class="text-on-surface-variant hover:text-on-background font-label text-sm flex items-center gap-2 transition-colors active:scale-95 py-2 px-4 rounded-full bg-surface-container-high"><span class="material-symbols-outlined text-lg">close</span>
+            Return Home
+        </button>
+</main>
+</body></html>

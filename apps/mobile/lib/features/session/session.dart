@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:elaro_mobile/domain/reflection.dart';
+import 'package:elaro_mobile/runtime/app_config.dart';
 import 'package:elaro_mobile/runtime/dev_gate.dart';
 import 'package:elaro_mobile/runtime/microphone_permission_runtime.dart';
+import 'package:elaro_mobile/runtime/reflection_runtime.dart';
 import 'package:elaro_mobile/runtime/session.dart';
 
 import '../../components/breathing/breathing.dart';
@@ -51,6 +54,92 @@ enum _StartupMode {
   }
 }
 
+class EnvironmentalContextSnapshot {
+  const EnvironmentalContextSnapshot({
+    required this.contextTag,
+    required this.confidence,
+    this.hasPermission = true,
+    this.relativeNoiseLevel = 0,
+    this.soundClassification,
+  });
+
+  static const double confidenceThreshold = 0.6;
+  static const double noisyThreshold = 0.6;
+
+  final String contextTag;
+  final double confidence;
+  final bool hasPermission;
+  final double relativeNoiseLevel;
+  final String? soundClassification;
+
+  bool get isConfident => hasPermission && confidence >= confidenceThreshold;
+  bool get shouldSuggestSoundscape => isConfident && relativeNoiseLevel >= noisyThreshold;
+
+  String get tagLabel {
+    switch (contextTag) {
+      case 'urban-vibe':
+        return 'Urban Vibe';
+      case 'absolute-silence':
+        return 'Absolute Silence';
+      case 'nature':
+        return 'Nature';
+      case 'white-noise':
+        return 'White noise';
+      default:
+        return contextTag;
+    }
+  }
+
+  Map<String, Object?> toSummaryJson() {
+    return <String, Object?>{
+      'context_tag': contextTag,
+      'confidence_band': confidence >= 0.8 ? 'high' : 'medium',
+      'noise_band': relativeNoiseLevel >= noisyThreshold ? 'elevated' : 'settled',
+    };
+  }
+
+  Map<String, Object?> toStartPayloadJson() {
+    return <String, Object?>{
+      'context_tag': contextTag,
+      'confidence': confidence,
+      'has_permission': hasPermission,
+      'relative_noise_level': relativeNoiseLevel,
+      if (soundClassification != null)
+        'sound_classification': soundClassification,
+    };
+  }
+
+  static EnvironmentalContextSnapshot? fromDynamic(Object? value) {
+    if (value is EnvironmentalContextSnapshot) {
+      return value;
+    }
+    if (value is! Map) {
+      return null;
+    }
+
+    final tag = value['contextTag'] ?? value['context_tag'];
+    final confidence = _readDouble(value['confidence']);
+    if (tag is! String || tag.isEmpty || confidence == null) {
+      return null;
+    }
+
+    return EnvironmentalContextSnapshot(
+      contextTag: tag,
+      confidence: confidence,
+      hasPermission: value['hasPermission'] as bool? ?? value['has_permission'] as bool? ?? true,
+      relativeNoiseLevel: _readDouble(value['relativeNoiseLevel'] ?? value['relative_noise_level']) ?? 0,
+      soundClassification: value['soundClassification'] as String? ?? value['sound_classification'] as String?,
+    );
+  }
+
+  static double? _readDouble(Object? value) {
+    if (value is num) {
+      return value.toDouble();
+    }
+    return null;
+  }
+}
+
 class SessionStartArgs {
   static const List<int> microSessionDurations = <int>[20, 45, 90, 180];
   static const int defaultDurationSeconds = 180;
@@ -62,6 +151,7 @@ class SessionStartArgs {
     this.simulateNoMicrophone = false,
     this.simulateLowConfidence = false,
     this.sessionDurationSeconds = defaultDurationSeconds,
+    this.environmentalContext,
   });
 
   final String sessionRoute;
@@ -70,6 +160,7 @@ class SessionStartArgs {
   final bool simulateNoMicrophone;
   final bool simulateLowConfidence;
   final int sessionDurationSeconds;
+  final EnvironmentalContextSnapshot? environmentalContext;
 
   factory SessionStartArgs.fromDynamic(Object? args) {
     if (args is SessionStartArgs) {
@@ -92,6 +183,8 @@ class SessionStartArgs {
         simulateNoMicrophone: args['simulateNoMicrophone'] as bool? ?? false,
         simulateLowConfidence: args['simulateLowConfidence'] as bool? ?? false,
         sessionDurationSeconds: parsedDuration,
+        environmentalContext:
+            EnvironmentalContextSnapshot.fromDynamic(args['environmentalContext']),
       );
     }
 
@@ -157,12 +250,18 @@ class SessionReflectionArgs {
     required this.sessionRoute,
     this.healthPermissionGranted = false,
     this.bio,
+    this.environmentalContext,
+    this.aiInsightOptIn = false,
+    this.aiProviderAvailable = true,
   });
 
   final String sessionId;
   final String sessionRoute;
   final bool healthPermissionGranted;
   final _BiofeedbackSnapshot? bio;
+  final EnvironmentalContextSnapshot? environmentalContext;
+  final bool aiInsightOptIn;
+  final bool aiProviderAvailable;
 
   factory SessionReflectionArgs.fromDynamic(Object? args,
       {required String fallbackSessionRoute}) {
@@ -177,6 +276,10 @@ class SessionReflectionArgs {
         healthPermissionGranted:
             args['healthPermissionGranted'] as bool? ?? false,
         bio: _BiofeedbackSnapshot.fromDynamic(args['bio']),
+        environmentalContext:
+            EnvironmentalContextSnapshot.fromDynamic(args['environmentalContext']),
+        aiInsightOptIn: args['aiInsightOptIn'] as bool? ?? false,
+        aiProviderAvailable: args['aiProviderAvailable'] as bool? ?? true,
       );
     }
 
@@ -199,15 +302,65 @@ class SessionStartScreen extends StatefulWidget {
 class _SessionStartScreenState extends State<SessionStartScreen> {
   late int _selectedDurationSeconds;
   bool _isStarting = false;
+  bool _showSoundscapeSuggestion = true;
   final MicrophonePermissionRuntime _microphonePermissionRuntime =
       MicrophonePermissionRuntime.instance;
+  final EnvironmentalContextRuntime _environmentalContextRuntime =
+      EnvironmentalContextRuntime.instance;
   _StartupMode _currentStartupMode = _StartupMode.standard;
+  EnvironmentalContextSnapshot? _environmentalContext;
+  bool _hasMicrophone = true;
 
   @override
   void initState() {
     super.initState();
     _selectedDurationSeconds = widget.args.sessionDurationSeconds;
     _currentStartupMode = _StartupMode.fromDuration(_selectedDurationSeconds);
+    _hasMicrophone = !(widget.args.simulateNoMicrophone) &&
+        (widget.args.hasMicrophone ?? true);
+    _environmentalContext = widget.args.environmentalContext;
+    _hydrateEnvironmentalContext();
+  }
+
+  Future<void> _hydrateEnvironmentalContext() async {
+    final hasMicrophone = widget.args.simulateNoMicrophone
+        ? false
+        : widget.args.hasMicrophone ??
+            await _microphonePermissionRuntime.preflight();
+    final sampled = _environmentalContext ??
+        _sampleEnvironmentalContext(hasMicrophone: hasMicrophone);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _hasMicrophone = hasMicrophone;
+      _environmentalContext = sampled;
+    });
+  }
+
+  EnvironmentalContextSnapshot? _sampleEnvironmentalContext({
+    required bool hasMicrophone,
+  }) {
+    final sampled = _environmentalContextRuntime.sample(
+      hasMicrophone: hasMicrophone,
+      lowConfidence: widget.args.simulateLowConfidence,
+      manualCheckin: widget.args.manualCheckin,
+    );
+    if (sampled == null) {
+      return null;
+    }
+    return EnvironmentalContextSnapshot(
+      contextTag: sampled.contextTag,
+      confidence: sampled.confidence,
+      hasPermission: hasMicrophone,
+      relativeNoiseLevel: sampled.relativeNoiseLevel ==
+              EnvironmentalNoiseLevel.high
+          ? 0.9
+          : sampled.relativeNoiseLevel == EnvironmentalNoiseLevel.medium
+              ? 0.55
+              : 0.2,
+      soundClassification: sampled.classification,
+    );
   }
 
   @override
@@ -265,9 +418,105 @@ class _SessionStartScreenState extends State<SessionStartScreen> {
               onPressed: _isStarting ? null : _startSession,
               child: const Text('Bắt đầu'),
             ),
+            const SizedBox(height: 16),
+            _buildEnvironmentalContextSection(context),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildEnvironmentalContextSection(BuildContext context) {
+    final environmentalContext = _environmentalContext;
+    final manualFallback =
+        'manual-${(widget.args.manualCheckin ?? CheckinState.calm).value}';
+
+    if (environmentalContext == null || !environmentalContext.isConfident) {
+      return SectionCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Bối cảnh môi trường',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Context thủ công: $manualFallback',
+              key: const Key('session-environmental-manual-context'),
+            ),
+            const SizedBox(height: 4),
+            const Text('độ tin cậy thấp'),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SectionCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Bối cảnh môi trường',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              Chip(
+                key: const Key('session-environmental-context-tag'),
+                label: Text(environmentalContext.tagLabel),
+              ),
+              const SizedBox(height: 4),
+              const Text('Phân loại on-device, không upload raw audio.'),
+            ],
+          ),
+        ),
+        if (environmentalContext.shouldSuggestSoundscape &&
+            _showSoundscapeSuggestion) ...[
+          const SizedBox(height: 12),
+          Card(
+            key: const Key('session-soundscape-suggestion-card'),
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Không gian có vẻ hơi nhiều chuyển động.',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Bạn muốn thêm tiếng mưa nhẹ để dễ ở lại với hơi thở hơn không?',
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      key: const Key('session-soundscape-dismiss'),
+                      onPressed: () {
+                        setState(() {
+                          _showSoundscapeSuggestion = false;
+                        });
+                      },
+                      child: const Text('Để sau'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+        if (DevGate.enabled && environmentalContext.soundClassification != null)
+          DevSection(
+            child: Text(
+              'DEV • environmental classification: ${environmentalContext.soundClassification}',
+            ),
+          ),
+      ],
     );
   }
 
@@ -284,8 +533,9 @@ class _SessionStartScreenState extends State<SessionStartScreen> {
 
     final hasMicrophone = widget.args.simulateNoMicrophone
         ? false
-        : widget.args.hasMicrophone ??
-            await _microphonePermissionRuntime.preflight();
+        : widget.args.hasMicrophone ?? _hasMicrophone;
+    final environmentalContext =
+        _environmentalContext ?? _sampleEnvironmentalContext(hasMicrophone: hasMicrophone);
 
     final runtime = const SessionRuntime();
     final event = runtime.startSession(
@@ -293,6 +543,7 @@ class _SessionStartScreenState extends State<SessionStartScreen> {
       manualCheckin: widget.args.manualCheckin,
       sessionDurationSeconds: _selectedDurationSeconds,
       startupMode: startupMode.label,
+      environmentalContext: environmentalContext,
     );
     final timerState = SessionTimerState.fromStartEvent(
       event.toJson(),
@@ -1201,6 +1452,11 @@ class SessionReflectionScreen extends StatelessWidget {
               bio: args.bio,
             ),
             const SizedBox(height: 16),
+            _ReflectionDashboardBlock(
+              args: args,
+              trend: trend,
+            ),
+            const SizedBox(height: 16),
             DistressBoundary(
               key: const Key('reflection-distress-boundary'),
               onAction: () => _openSupportResourcesSheet(context),
@@ -1283,6 +1539,7 @@ class _SessionReflectionTrend {
   }
 }
 
+
 class _BiofeedbackReflectionBlock extends StatelessWidget {
   const _BiofeedbackReflectionBlock({
     required this.healthPermissionGranted,
@@ -1328,9 +1585,263 @@ class _BiofeedbackReflectionBlock extends StatelessWidget {
             'Nhịp tim ${snapshot.heartRateTone}; chuyển động ${snapshot.movementTone}; nhịp hồi phục ${snapshot.hrvDirection}. đây là chiều hướng, không phải chỉ số',
             key: const Key('session-reflection-biofeedback-body'),
           ),
+          const SizedBox(height: 12),
+          Container(
+            key: const Key('session-reflection-relaxation-state'),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.tertiaryContainer,
+                  Theme.of(context).colorScheme.secondaryContainer,
+                ],
+              ),
+            ),
+            child: const Text(
+              'Trạng thái thư giãn: cơ thể đang chuyển dần sang xu hướng dịu hơn.',
+            ),
+          ),
         ],
       ),
     );
+  }
+}
+
+class _ReflectionDashboardBlock extends StatefulWidget {
+  const _ReflectionDashboardBlock({
+    required this.args,
+    required this.trend,
+  });
+
+  final SessionReflectionArgs args;
+  final _SessionReflectionTrend trend;
+
+  @override
+  State<_ReflectionDashboardBlock> createState() =>
+      _ReflectionDashboardBlockState();
+}
+
+class _ReflectionDashboardBlockState extends State<_ReflectionDashboardBlock> {
+  final SessionRuntime _runtime = const SessionRuntime();
+  late final Future<ReflectionInsight> _insightFuture = _loadInsight();
+
+  @override
+  Widget build(BuildContext context) {
+    final environmental = _resolvedEnvironmentalContext();
+    final bioSummary = _bioSummary();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SectionCard(
+          key: const Key('session-reflection-dashboard'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Bản đồ phản chiếu phiên',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              if (environmental == null && bioSummary == null)
+                const Text(
+                  'Hiện chỉ có dữ liệu nền của phiên này, nên phản hồi giữ ở trạng thái nhẹ và không suy diễn thêm.',
+                  key: Key('session-reflection-dashboard-fallback'),
+                )
+              else ...[
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    if (environmental != null)
+                      Chip(
+                        key: const Key('session-reflection-environment-chip'),
+                        label: Text('Bối cảnh: ${environmental.tagLabel}'),
+                      ),
+                    if (bioSummary != null)
+                      const Chip(
+                        key: Key('session-reflection-bio-chip'),
+                        label: Text('Cơ thể: có tín hiệu được phép'),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _correlationCopy(environmental: environmental, bioSummary: bioSummary),
+                  key: const Key('session-reflection-dashboard-correlation'),
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        ValueListenableBuilder<bool>(
+          valueListenable: AiConsentRuntime.instance.optedInListenable,
+          builder: (context, optedIn, _) {
+            if (optedIn) {
+              return const SizedBox.shrink();
+            }
+            return const SectionCard(
+              child: Text(
+                'AI insight hiện đang tắt. Bạn có thể bật trong Settings; local fallback vẫn tiếp tục dùng được.',
+                key: Key('session-reflection-ai-opt-in-copy'),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 16),
+        FutureBuilder<ReflectionInsight>(
+          future: _insightFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const SectionCard(
+                child: Text(
+                  'Đang làm dịu lại bản tóm tắt của phiên...',
+                  key: Key('session-reflection-ai-loading'),
+                ),
+              );
+            }
+
+            final insight = snapshot.data ??
+                const ReflectionInsight(
+                  message:
+                      'Phiên này đang được giữ ở bản tóm tắt nội bộ, không cần thêm xử lý nào khác.',
+                  source: 'local-fallback',
+                );
+
+            return SectionCard(
+              key: const Key('session-reflection-ai-message-card'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    insight.fromProvider
+                        ? 'Empathetic insight'
+                        : 'Empathetic insight · local fallback',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    insight.message,
+                    key: const Key('session-reflection-ai-message'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Future<ReflectionInsight> _loadInsight() async {
+    final cached = _runtime.latestReflectionInsightForSession(widget.args.sessionId);
+    if (cached != null) {
+      final message = cached.payload['message'] as String?;
+      final source = cached.payload['source'] as String?;
+      if (message != null && source != null) {
+        return ReflectionInsight(message: message, source: source);
+      }
+    }
+
+    final summary = ReflectionSummary(
+      sessionId: widget.args.sessionId,
+      sessionRoute: widget.args.sessionRoute,
+      elapsedSeconds: _elapsedSeconds(),
+      trendCopy: widget.trend.copy,
+      environmentalContext: _toEnvironmentalEvidence(_resolvedEnvironmentalContext()),
+      biofeedbackSummary: _bioSummary(),
+    );
+
+    final insight = await ReflectionRuntime.instance.buildEmpatheticInsight(summary: summary);
+    _runtime.recordReflectionInsight(
+      sessionId: widget.args.sessionId,
+      message: insight.message,
+      source: insight.source,
+    );
+    if (!insight.fromProvider &&
+        AiConsentRuntime.instance.optedIn &&
+        AppConfig.hasOpenAiKey) {
+      _runtime.recordProviderFallback(
+        sessionId: widget.args.sessionId,
+        reason: 'provider-unavailable',
+      );
+    }
+    return insight;
+  }
+
+  int _elapsedSeconds() {
+    final event = _runtime.timeline.cast<SessionTimelineEvent?>().lastWhere(
+          (candidate) =>
+              candidate?.type == SessionTimelineEventType.sessionComplete &&
+              candidate?.payload[sessionIdTimelineKey] == widget.args.sessionId,
+          orElse: () => null,
+        );
+    final rawElapsed = event?.payload[elapsedSecondsTimelineKey];
+    return switch (rawElapsed) {
+      int() => rawElapsed,
+      num() => rawElapsed.toInt(),
+      _ => 0,
+    };
+  }
+
+  EnvironmentalContextSnapshot? _resolvedEnvironmentalContext() {
+    final fromArgs = widget.args.environmentalContext;
+    if (fromArgs != null) {
+      return fromArgs;
+    }
+    final startEvent = _runtime.latestStartEventForSession(widget.args.sessionId);
+    if (startEvent == null) {
+      return null;
+    }
+    return EnvironmentalContextSnapshot.fromDynamic(startEvent.payload);
+  }
+
+  EnvironmentalContextEvidence? _toEnvironmentalEvidence(
+    EnvironmentalContextSnapshot? snapshot,
+  ) {
+    if (snapshot == null) {
+      return null;
+    }
+    return EnvironmentalContextEvidence(
+      contextTag: snapshot.contextTag,
+      classification: snapshot.soundClassification ?? 'steady-breath',
+      relativeNoiseLevel: snapshot.relativeNoiseLevel >= EnvironmentalContextSnapshot.noisyThreshold
+          ? EnvironmentalNoiseLevel.high
+          : snapshot.relativeNoiseLevel > 0.3
+              ? EnvironmentalNoiseLevel.medium
+              : EnvironmentalNoiseLevel.low,
+      confidence: snapshot.confidence,
+      soundscapeSuggestion: snapshot.shouldSuggestSoundscape ? 'tiếng mưa nhẹ' : null,
+    );
+  }
+
+  String? _bioSummary() {
+    final snapshot = widget.args.bio;
+    if (!widget.args.healthPermissionGranted || snapshot == null) {
+      return null;
+    }
+    if (!snapshot.highConfidence) {
+      return null;
+    }
+    return 'Nhịp tim ${snapshot.heartRateTone}; chuyển động ${snapshot.movementTone}; nhịp hồi phục ${snapshot.hrvDirection}.';
+  }
+
+  String _correlationCopy({
+    required EnvironmentalContextSnapshot? environmental,
+    required String? bioSummary,
+  }) {
+    if (environmental == null && bioSummary == null) {
+      return 'Bản phản chiếu này đang ở mức nền.';
+    }
+    if (environmental != null && bioSummary != null) {
+      return 'Bối cảnh ${environmental.tagLabel.toLowerCase()} và tín hiệu cơ thể đang được đặt cạnh nhau như một xu hướng mềm, không phải bảng điểm.';
+    }
+    if (environmental != null) {
+      return 'Bối cảnh ${environmental.tagLabel.toLowerCase()} đang được giữ như một tín hiệu gợi ý, không phải kết luận.';
+    }
+    return 'Tín hiệu cơ thể đang được giữ như một chiều hướng dịu để bạn đối chiếu lại với cảm nhận của mình.';
   }
 }
 

@@ -70,6 +70,7 @@ class SessionRuntime {
     required CheckinState? manualCheckin,
     required int sessionDurationSeconds,
     required String startupMode,
+    EnvironmentalContextSnapshot? environmentalContext,
   }) {
     final createdAt = DateTime.now().toUtc();
     final event = SessionStartEvent(
@@ -80,6 +81,7 @@ class SessionRuntime {
         sessionDurationTimelineKey: sessionDurationSeconds,
         startupModeTimelineKey: startupMode,
         sessionIdTimelineKey: createdAt.toUtc().toIso8601String(),
+        if (environmentalContext != null) ...environmentalContext.toStartPayloadJson(),
       },
     );
 
@@ -196,6 +198,36 @@ class SessionRuntime {
     return entryId;
   }
 
+  void recordReflectionInsight({
+    required String sessionId,
+    required String message,
+    required String source,
+  }) {
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.reflectionInsight,
+      at: DateTime.now().toUtc(),
+      sessionId: sessionId,
+      elapsedSeconds: 0,
+      payload: <String, Object?>{
+        'message': message,
+        'source': source,
+      },
+    );
+  }
+
+  void recordProviderFallback({
+    required String sessionId,
+    required String reason,
+  }) {
+    _appendTimelineEvent(
+      type: SessionTimelineEventType.providerFallback,
+      at: DateTime.now().toUtc(),
+      sessionId: sessionId,
+      elapsedSeconds: 0,
+      payload: <String, Object?>{reasonTimelineKey: reason},
+    );
+  }
+
   void recordRecovery({
     required String sessionId,
     required int elapsedSeconds,
@@ -276,6 +308,32 @@ class SessionRuntime {
       return 'none';
     }
     return latest.type.value;
+  }
+
+  SessionTimelineEvent? latestStartEventForSession(String sessionId) {
+    final exact = _timeline.cast<SessionTimelineEvent?>().lastWhere(
+          (event) =>
+              event?.type == SessionTimelineEventType.sessionStart &&
+              event?.payload[sessionIdTimelineKey] == sessionId,
+          orElse: () => null,
+        );
+    if (exact != null) {
+      return exact;
+    }
+
+    return _timeline.cast<SessionTimelineEvent?>().lastWhere(
+          (event) => event?.type == SessionTimelineEventType.sessionStart,
+          orElse: () => null,
+        );
+  }
+
+  SessionTimelineEvent? latestReflectionInsightForSession(String sessionId) {
+    return _timeline.cast<SessionTimelineEvent?>().lastWhere(
+          (event) =>
+              event?.type == SessionTimelineEventType.reflectionInsight &&
+              event?.payload[sessionIdTimelineKey] == sessionId,
+          orElse: () => null,
+        );
   }
 
   SessionTimelineEvent? _latestEventForSession(String sessionId) {

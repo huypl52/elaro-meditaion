@@ -15,6 +15,8 @@ enum SessionTimelineEventType {
   sessionManualExit('session_manual_exit'),
   sessionBell('session_bell'),
   journal('journal'),
+  reflectionInsight('reflection_insight'),
+  providerFallback('provider_fallback'),
   sosInterrupt('sos_interrupt'),
   sosTimeoutExit('sos_timeout_exit');
 

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Calm - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&amp;family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#4d644d",
+                        "tertiary-container": "#cba97f",
+                        "secondary-container": "#15524c",
+                        "on-secondary-fixed": "#00201d",
+                        "outline": "#8d928a",
+                        "on-background": "#dee4df",
+                        "outline-variant": "#434842",
+                        "tertiary-fixed-dim": "#e5c095",
+                        "primary-fixed": "#cfeacc",
+                        "surface-container": "#1b211e",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#5b4221",
+                        "on-tertiary": "#422c0d",
+                        "inverse-surface": "#dee4df",
+                        "tertiary-fixed": "#ffddb6",
+                        "surface-tint": "#b4cdb1",
+                        "on-tertiary-container": "#563d1d",
+                        "on-surface": "#dee4df",
+                        "surface-container-lowest": "#0a0f0d",
+                        "on-tertiary-fixed": "#2a1800",
+                        "secondary": "#98d1ca",
+                        "surface-variant": "#303633",
+                        "surface-container-high": "#252b28",
+                        "on-secondary-container": "#8ac3bc",
+                        "tertiary": "#e9c498",
+                        "primary": "#b7d1b4",
+                        "inverse-on-surface": "#2c322e",
+                        "on-primary-container": "#314732",
+                        "surface-container-highest": "#303633",
+                        "surface-bright": "#343b37",
+                        "secondary-fixed-dim": "#98d1ca",
+                        "on-primary-fixed-variant": "#364c37",
+                        "surface": "#0f1512",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#171d1a",
+                        "primary-fixed-dim": "#b4cdb1",
+                        "surface-dim": "#0f1512",
+                        "on-secondary": "#003733",
+                        "on-surface-variant": "#c3c8bf",
+                        "on-primary-fixed": "#0b200e",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#114f4a",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#b4eee6",
+                        "on-primary": "#203522",
+                        "primary-container": "#9cb59a",
+                        "background": "#0f1512"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader", "serif"],
+                        "display": ["Newsreader", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        .soft-shadow {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-5 h-16 bg-background transition-opacity duration-300 flat no shadows">
+<button class="text-primary hover:opacity-80 transition-opacity flex items-center justify-center p-2 -ml-2 rounded-full active:bg-surface-variant">
+<span class="material-symbols-outlined text-2xl">spa</span>
+</button>
+<h1 class="font-headline text-2xl font-bold text-primary tracking-wide">Calm</h1>
+<button aria-label="SOS Emergency" class="text-tertiary hover:opacity-80 transition-opacity flex items-center justify-center p-2 -mr-2 rounded-full active:bg-surface-variant">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">emergency_home</span>
+</button>
+</header>
+<!-- Main Scrollable Canvas -->
+<main class="flex-1 overflow-y-auto pt-24 pb-32 px-5 max-w-md mx-auto w-full space-y-16">
+<!-- Hero Section -->
+<section class="space-y-6">
+<div class="space-y-2">
+<h2 class="font-headline text-4xl text-on-surface font-medium tracking-tight">Chào buổi tối.</h2>
+<p class="text-on-surface-variant text-lg font-light tracking-wide">Take a gentle breath.</p>
+</div>
+<!-- Primary Action -->
+<div class="space-y-4">
+<button class="w-full bg-primary-container text-on-primary-container rounded-2xl py-5 px-6 flex items-center justify-between group hover:bg-surface-tint transition-colors soft-shadow active:scale-[0.98] duration-200">
+<span class="font-headline text-2xl font-medium">Bắt đầu phiên thiền</span>
+<span class="material-symbols-outlined text-3xl group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
+</button>
+<button class="w-full bg-surface-container-low text-on-surface border border-outline-variant/30 rounded-2xl py-4 px-6 flex items-center justify-center space-x-2 hover:bg-surface-container-high transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl">air</span>
+<span class="font-medium">3-Minute Breath</span>
+</button>
+</div>
+<!-- Emotional Check-in -->
+<div class="pt-2">
+<p class="text-sm text-muted text-on-surface-variant mb-4 font-label">How are you arriving?</p>
+<div class="flex flex-wrap gap-3">
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-5 py-2.5 rounded-full text-sm font-medium border border-outline-variant transition-colors active:scale-95">
+                        Calm
+                    </button>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-5 py-2.5 rounded-full text-sm font-medium border border-outline-variant transition-colors active:scale-95">
+                        Tired
+                    </button>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-5 py-2.5 rounded-full text-sm font-medium border border-outline-variant transition-colors active:scale-95">
+                        Anxious
+                    </button>
+</div>
+</div>
+</section>
+<!-- Suggested Session Card -->
+<section>
+<div class="relative w-full h-80 rounded-[28px] overflow-hidden group cursor-pointer active:scale-[0.99] transition-transform duration-300 soft-shadow">
+<!-- Background Image -->
+<div class="absolute inset-0 bg-cover bg-center w-full h-full opacity-60 mix-blend-screen transition-opacity group-hover:opacity-80" data-alt="A tranquil, abstract digital rendering of a softly glowing orb immersed in deep, dark moss green and muted teal shadows. The lighting is extremely soft, resembling moonlight filtering through deep water. The visual style is highly minimalistic, emphasizing emotional safety and quiet contemplation over sharp details. The mood is deeply restful and non-clinical, fitting perfectly within a premium, calm dark-mode meditation interface." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCwkCUpfh4hzUhgEo99ToH3kAs2z89CTfsj6tXTgDUR0mMdhiHvOLjLc4Ut9wWwBCWDnKhdl2YH5WNxDWQGJV46Du_vhPK__jm72jBvKOuxBIVcHe_shc7Um03xtkNk82_2kqx7_3TqDZnIRw-FKaTvDVTk9sdGo9YY5O148UGEV74cdOssJn890IEmL1MADDjiLIfmkdmEY5pTCqF48Hd8jRgRFI-SzdyRSJNp6Kb3d8kNJ_uNj72wgo2xaTaWoEKckiC-JYVcuU1R')"></div>
+<!-- Gradient Overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/40 to-transparent"></div>
+<!-- Content -->
+<div class="absolute inset-0 p-6 flex flex-col justify-end">
+<div class="flex items-center justify-between mb-2">
+<span class="bg-surface/40 backdrop-blur-md text-primary-fixed px-3 py-1 rounded-full text-xs font-label uppercase tracking-wider border border-white/10">Perfect for this quiet hour</span>
+<span class="material-symbols-outlined text-primary-fixed/80 text-xl" title="Available offline">cloud_done</span>
+</div>
+<h3 class="font-headline text-3xl text-on-surface mb-1">Thở sâu đêm nay</h3>
+<div class="flex items-center text-on-surface-variant text-sm font-light space-x-2">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>10 mins</span>
+<span>•</span>
+<span>Guided</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Community Presence -->
+<section class="bg-surface-container-low rounded-2xl p-5 flex items-center justify-center space-x-3 border border-outline-variant/30">
+<div class="relative flex items-center justify-center h-4 w-4">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-20"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary opacity-70"></span>
+</div>
+<p class="text-sm text-on-surface-variant font-light tracking-wide text-center">142 others are breathing with you right now.</p>
+</section>
+<!-- Ritual/Recent -->
+<section class="space-y-4">
+<h4 class="font-headline text-xl text-on-surface">Recent Ritual: Sleep Wind Down</h4>
+<button class="w-full bg-surface-container hover:bg-surface-container-high rounded-2xl p-4 flex items-center space-x-4 transition-colors active:scale-[0.98]">
+<div class="h-14 w-14 rounded-xl bg-secondary-container/50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary text-2xl">bedtime</span>
+</div>
+<div class="flex-1 text-left text-sm"><p class="text-on-surface-variant font-light">Last played yesterday</p></div>
+<span class="material-symbols-outlined text-on-surface-variant">play_circle</span>
+</button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-low shadow-sm rounded-t-xl transition-all">
+<!-- Active: Home -->
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-5 py-1 scale-95 active:scale-90 transition-transform hover:opacity-80">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home_max</span>
+<span class="font-label text-label-sm tracking-wide mt-1">Home</span>
+</button>
+<!-- Inactive: Library -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:bg-surface-variant rounded-full px-4 py-1 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-label text-label-sm tracking-wide mt-1">Library</span>
+</button>
+<!-- Inactive: Growth -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:bg-surface-variant rounded-full px-4 py-1 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label text-label-sm tracking-wide mt-1">Growth</span>
+</button>
+<!-- Inactive: Settings -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:bg-surface-variant rounded-full px-4 py-1 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label text-label-sm tracking-wide mt-1">Settings</span>
+</button>
+</nav>
+</body></html>

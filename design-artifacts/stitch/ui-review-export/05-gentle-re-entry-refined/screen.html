@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gentle Re-entry</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#690005",
+                        "primary-fixed-dim": "#b4cdb1",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#cfeacc",
+                        "on-primary-container": "#314732",
+                        "on-primary": "#203522",
+                        "surface-container": "#1b211e",
+                        "on-primary-fixed": "#0b200e",
+                        "secondary-fixed-dim": "#98d1ca",
+                        "inverse-primary": "#4d644d",
+                        "surface-variant": "#303633",
+                        "on-tertiary-fixed-variant": "#5b4221",
+                        "on-background": "#dee4df",
+                        "on-surface": "#dee4df",
+                        "on-secondary-fixed": "#00201d",
+                        "inverse-surface": "#dee4df",
+                        "secondary": "#98d1ca",
+                        "surface-container-low": "#171d1a",
+                        "on-tertiary-container": "#563d1d",
+                        "surface-dim": "#0f1512",
+                        "primary": "#b7d1b4",
+                        "on-primary-fixed-variant": "#364c37",
+                        "tertiary-fixed": "#ffddb6",
+                        "surface": "#0f1512",
+                        "secondary-fixed": "#b4eee6",
+                        "outline-variant": "#434842",
+                        "on-secondary-fixed-variant": "#114f4a",
+                        "on-secondary": "#003733",
+                        "tertiary-fixed-dim": "#e5c095",
+                        "on-tertiary": "#422c0d",
+                        "on-surface-variant": "#c3c8bf",
+                        "on-error-container": "#ffdad6",
+                        "outline": "#8d928a",
+                        "secondary-container": "#15524c",
+                        "primary-container": "#9cb59a",
+                        "surface-tint": "#b4cdb1",
+                        "tertiary-container": "#cba97f",
+                        "surface-bright": "#343b37",
+                        "surface-container-lowest": "#0a0f0d",
+                        "error": "#ffb4ab",
+                        "background": "#0f1512",
+                        "surface-container-highest": "#303633",
+                        "tertiary": "#e9c498",
+                        "on-secondary-container": "#8ac3bc",
+                        "on-tertiary-fixed": "#2a1800",
+                        "inverse-on-surface": "#2c322e",
+                        "surface-container-high": "#252b28"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "card": "28px",
+                        "cta": "18px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader", "serif"],
+                        "display": ["Newsreader", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Subtle entrance animation for the text to emphasize the gentle re-entry */
+        @keyframes gentleFadeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-gentle-fade {
+            animation: gentleFadeIn 2s ease-out forwards;
+        }
+        .animate-delay-1 { animation-delay: 1s; opacity: 0; }
+        .animate-delay-2 { animation-delay: 1.5s; opacity: 0; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col relative overflow-hidden font-body selection:bg-surface-variant selection:text-on-surface">
+<!-- Background Atmospheric Glow -->
+<!-- A warm, subtle, organic shape to provide a 'human touch' feeling in the dark moss space -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 mix-blend-screen">
+<div class="w-[150vw] h-[150vw] md:w-[60vw] md:h-[60vw] bg-tertiary-container/5 rounded-full blur-[120px] transform -translate-y-1/4"></div>
+</div>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center w-full max-w-md mx-auto px-6 z-10">
+<!-- Reassuring Message -->
+<div class="mb-20 text-center animate-gentle-fade w-full">
+<h1 class="font-display text-3xl md:text-4xl text-on-surface font-normal leading-relaxed tracking-tight">
+                Bạn có thể dừng ở đây<br/>
+<span class="text-on-surface-variant italic font-light">nếu đã đủ.</span>
+</h1>
+</div>
+<!-- Low-stakes Actions -->
+<div class="w-full flex flex-col gap-4 animate-gentle-fade animate-delay-1">
+<!-- Primary Safe Exit -->
+<button class="w-full py-4 px-6 bg-surface-container-high hover:bg-surface-bright text-on-surface font-label text-[15px] font-medium tracking-wide rounded-[18px] transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-primary-container focus:ring-offset-2 focus:ring-offset-background group flex items-center justify-center gap-2">
+                Dừng lại tại đây
+            </button>
+<!-- Secondary Action -->
+<button class="w-full py-4 px-6 bg-transparent border border-outline-variant hover:border-outline hover:bg-surface-container-low text-on-surface-variant font-label text-[15px] font-medium tracking-wide rounded-[18px] transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-primary-container focus:ring-offset-2 focus:ring-offset-background">
+                Nghe lại
+            </button>
+<!-- Tertiary / Ghost Action -->
+<button class="w-full py-4 px-6 bg-transparent text-outline hover:text-on-surface-variant font-label text-[14px] font-medium tracking-wide rounded-[18px] transition-colors duration-300 ease-out focus:outline-none">
+                Thực hành thêm
+            </button>
+</div>
+</main>
+</body></html>

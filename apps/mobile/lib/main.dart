@@ -6,6 +6,8 @@ import 'package:elaro_mobile/features/ritual/ritual.dart';
 import 'package:elaro_mobile/features/session/session.dart';
 import 'package:elaro_mobile/features/sos/sos.dart';
 import 'package:elaro_mobile/features/voice_journal/voice_journal.dart';
+import 'package:elaro_mobile/runtime/app_config.dart';
+import 'package:elaro_mobile/runtime/reflection_runtime.dart';
 import 'package:elaro_mobile/runtime/sos_runtime.dart';
 
 void main() {
@@ -118,6 +120,9 @@ class ElaroMedApp extends StatelessWidget {
             sessionRoute: reflectionArgs.sessionRoute,
             healthPermissionGranted: reflectionArgs.healthPermissionGranted,
             bio: reflectionArgs.bio,
+            environmentalContext: reflectionArgs.environmentalContext,
+            aiInsightOptIn: reflectionArgs.aiInsightOptIn,
+            aiProviderAvailable: reflectionArgs.aiProviderAvailable,
           ),
         ),
       );
@@ -236,11 +241,59 @@ class _SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
-        children: const [
-          Text('Settings'),
-        ],
+      body: ValueListenableBuilder<bool>(
+        valueListenable: AiConsentRuntime.instance.optedInListenable,
+        builder: (context, optedIn, _) {
+          return ListView(
+            padding: const EdgeInsets.all(24),
+            children: [
+              const Text('Settings'),
+              const SizedBox(height: 16),
+              Card(
+                key: const Key('settings-ai-insight-consent'),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'AI insight & external summaries',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Khi bật mục này, app có thể gửi summary tối giản của phiên tới provider bên ngoài để viết empathetic insight. Khi tắt, phản hồi dùng bản local và không gửi dữ liệu ra ngoài.',
+                      ),
+                      const SizedBox(height: 12),
+                      SwitchListTile.adaptive(
+                        key: const Key('settings-ai-insight-toggle'),
+                        contentPadding: EdgeInsets.zero,
+                        value: optedIn,
+                        title: Text(optedIn ? 'Đã opt-in AI insight' : 'AI insight đang tắt'),
+                        subtitle: Text(
+                          AppConfig.hasOpenAiKey
+                              ? 'Local-dev direct đang khả dụng trong môi trường hiện tại.'
+                              : 'Chưa có provider key trong runtime; app sẽ dùng local fallback.',
+                        ),
+                        onChanged: AiConsentRuntime.instance.setOptedIn,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Card(
+                key: Key('settings-context-biofeedback-copy'),
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    'Microphone chỉ dùng cho environmental context on-device; health signals là tùy chọn và chỉ làm giàu reflection.',
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

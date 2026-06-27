@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Calm - Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#15524c",
+                    "tertiary-container": "#cba97f",
+                    "on-secondary-fixed-variant": "#114f4a",
+                    "surface": "#0f1512",
+                    "secondary": "#98d1ca",
+                    "outline": "#8d928a",
+                    "tertiary": "#e9c498",
+                    "on-secondary-fixed": "#00201d",
+                    "on-primary": "#203522",
+                    "surface-container-high": "#252b28",
+                    "surface-container-low": "#171d1a",
+                    "on-primary-container": "#314732",
+                    "on-primary-fixed-variant": "#364c37",
+                    "surface-bright": "#343b37",
+                    "on-secondary": "#003733",
+                    "primary-fixed": "#cfeacc",
+                    "on-tertiary": "#422c0d",
+                    "tertiary-fixed-dim": "#e5c095",
+                    "on-surface": "#dee4df",
+                    "on-primary-fixed": "#0b200e",
+                    "error": "#ffb4ab",
+                    "tertiary-fixed": "#ffddb6",
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#98d1ca",
+                    "on-error": "#690005",
+                    "surface-container": "#1b211e",
+                    "primary-fixed-dim": "#b4cdb1",
+                    "on-tertiary-fixed": "#2a1800",
+                    "on-tertiary-fixed-variant": "#5b4221",
+                    "on-surface-variant": "#c3c8bf",
+                    "surface-variant": "#303633",
+                    "background": "#0f1512",
+                    "surface-container-lowest": "#0a0f0d",
+                    "outline-variant": "#434842",
+                    "inverse-primary": "#4d644d",
+                    "surface-tint": "#b4cdb1",
+                    "on-tertiary-container": "#563d1d",
+                    "on-background": "#dee4df",
+                    "error-container": "#93000a",
+                    "inverse-surface": "#dee4df",
+                    "surface-dim": "#0f1512",
+                    "primary-container": "#9cb59a",
+                    "on-secondary-container": "#8ac3bc",
+                    "primary": "#b7d1b4",
+                    "secondary-fixed": "#b4eee6",
+                    "inverse-on-surface": "#2c322e",
+                    "surface-container-highest": "#303633"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": [
+                            "Newsreader", "serif"
+                    ],
+                    "display": [
+                            "Newsreader", "serif"
+                    ],
+                    "body": [
+                            "Inter", "sans-serif"
+                    ],
+                    "label": [
+                            "Inter", "sans-serif"
+                    ]
+            },
+            "fontSize": {}
+    },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #171D1A; /* dark moss */
+            color: #F4F1EA;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, .font-headline {
+            font-family: 'Newsreader', serif;
+        }
+        /* Soft glow effect for hero card */
+        .glow-soft {
+            box-shadow: 0 0 40px rgba(156, 181, 154, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col antialiased">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-5 h-16 w-full top-0 bg-background dark:bg-background z-40 sticky">
+<button aria-label="Menu" class="text-primary hover:opacity-80 transition-opacity duration-300 flex items-center justify-center p-2 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">spa</span>
+</button>
+<h1 class="font-headline text-xl text-primary font-bold tracking-tight">Library</h1>
+<button aria-label="SOS" class="text-primary hover:opacity-80 transition-opacity duration-300 flex items-center justify-center p-2 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">emergency_home</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto pb-28 px-5 max-w-2xl mx-auto w-full">
+<!-- Right Now / Daily Calm Hero -->
+<section class="mt-4 mb-10">
+<div class="bg-surface-container-high rounded-2xl p-6 glow-soft relative overflow-hidden group cursor-pointer hover:bg-surface-bright transition-colors duration-300">
+<!-- Abstract subtle background shape -->
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/5 rounded-full blur-2xl"></div>
+<div class="relative z-10 flex flex-col h-full justify-between min-h-[140px]">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-xs font-label text-primary uppercase tracking-wider mb-1 block">Right Now</span>
+<h2 class="font-headline text-2xl text-on-surface mb-2">Morning Clarity</h2>
+<p class="text-sm text-on-surface-variant font-body">A gentle start to organize your thoughts.</p>
+</div>
+<button class="bg-primary text-on-primary-container rounded-full w-12 h-12 flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<div class="mt-6 flex items-center text-xs text-on-surface-variant space-x-3 font-label">
+<span class="flex items-center"><span class="material-symbols-outlined text-[14px] mr-1">schedule</span> 10 mins</span>
+<span>•</span>
+<span>Low Intensity</span>
+<div class="flex-1 text-right">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant opacity-70" title="Available Offline">cloud_done</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Transition Modes (High Visibility) -->
+<section class="mb-10">
+<h3 class="font-headline text-xl text-on-surface mb-4">Transition Modes</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Pre-meeting -->
+<div class="bg-surface-container rounded-xl p-5 flex items-center cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center mr-4 shrink-0">
+<span class="material-symbols-outlined">meeting_room</span>
+</div>
+<div class="flex-1">
+<h4 class="font-body font-medium text-on-surface">Pre-meeting Grounding</h4>
+<p class="text-xs text-on-surface-variant mt-1">2 mins • Low Intensity</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm ml-2">cloud_done</span>
+</div>
+<!-- Post-commute -->
+<div class="bg-surface-container rounded-xl p-5 flex items-center cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="w-10 h-10 rounded-full bg-surface-bright text-on-surface flex items-center justify-center mr-4 shrink-0">
+<span class="material-symbols-outlined">directions_car</span>
+</div>
+<div class="flex-1">
+<h4 class="font-body font-medium text-on-surface">Shed the Commute</h4>
+<p class="text-xs text-on-surface-variant mt-1">5 mins • Medium</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Browse by Need (Bento-ish grid) -->
+<section class="mb-8">
+<h3 class="font-headline text-xl text-on-surface mb-4">Browse by Need</h3>
+<div class="grid grid-cols-2 gap-4">
+<!-- Sleep -->
+<div class="bg-[#1b211e] rounded-2xl p-5 flex flex-col min-h-[160px] cursor-pointer hover:bg-surface-container-high transition-colors col-span-2 md:col-span-1 relative overflow-hidden group">
+<div class="absolute bottom-0 right-0 w-24 h-24 bg-tertiary-container/10 rounded-tl-full transition-transform group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-auto relative z-10">
+<div class="w-8 h-8 rounded-full bg-surface-bright flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">bedtime</span>
+</div>
+</div>
+<div class="relative z-10 mt-4">
+<h4 class="font-headline text-lg text-on-surface mb-1">Deep Sleep</h4>
+<p class="text-xs text-on-surface-variant font-label line-clamp-2">Wind down and prepare your body for rest.</p>
+</div>
+</div>
+<!-- Quick Reset -->
+<div class="bg-[#1b211e] rounded-2xl p-5 flex flex-col min-h-[160px] cursor-pointer hover:bg-surface-container-high transition-colors col-span-1 relative overflow-hidden group">
+<div class="absolute bottom-0 right-0 w-20 h-20 bg-secondary/10 rounded-tl-full transition-transform group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-auto relative z-10">
+<div class="w-8 h-8 rounded-full bg-surface-bright flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+</div>
+</div>
+<div class="relative z-10 mt-4">
+<h4 class="font-headline text-lg text-on-surface mb-1">Quick Reset</h4>
+<p class="text-xs text-on-surface-variant font-label">3-5 min pauses.</p>
+</div>
+</div>
+<!-- Deep Focus -->
+<div class="bg-[#1b211e] rounded-2xl p-5 flex flex-col min-h-[160px] cursor-pointer hover:bg-surface-container-high transition-colors col-span-1 relative overflow-hidden group">
+<div class="absolute bottom-0 right-0 w-20 h-20 bg-primary/10 rounded-tl-full transition-transform group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-auto relative z-10">
+<div class="w-8 h-8 rounded-full bg-surface-bright flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">center_focus_strong</span>
+</div>
+</div>
+<div class="relative z-10 mt-4">
+<h4 class="font-headline text-lg text-on-surface mb-1">Deep Focus</h4>
+<p class="text-xs text-on-surface-variant font-label">Find your flow state.</p>
+</div>
+</div>
+<!-- Overload Recovery -->
+<div class="bg-surface-container-high rounded-2xl p-5 flex flex-col min-h-[120px] cursor-pointer hover:bg-surface-bright transition-colors col-span-2 border border-surface-variant relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-tertiary/20 to-transparent"></div>
+<div class="flex items-center mb-2">
+<div class="w-8 h-8 rounded-full bg-tertiary-container/20 flex items-center justify-center text-tertiary mr-3">
+<span class="material-symbols-outlined text-[18px]">battery_0_bar</span>
+</div>
+<h4 class="font-headline text-lg text-on-surface">Overload Recovery</h4>
+</div>
+<p class="text-sm text-on-surface-variant font-body ml-11">Gentle sensory reduction for when everything feels too much.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container-low dark:bg-surface-container-low rounded-t-xl shadow-sm border-t-0 md:hidden">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary scale-95 duration-200 transition-all">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">home_max</span>
+<span class="font-label text-xs">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-95 duration-200 transition-all">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="font-label text-xs font-medium">Library</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary scale-95 duration-200 transition-all">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">monitoring</span>
+<span class="font-label text-xs">Growth</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary scale-95 duration-200 transition-all">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label text-xs">Settings</span>
+</button>
+</nav>
+<!-- Web Desktop Nav (Hidden on Mobile) -->
+<div class="hidden md:flex fixed top-0 w-full h-16 bg-background items-center justify-center space-x-8 z-30 pt-4">
+<a class="text-on-surface-variant hover:text-primary font-label text-sm transition-colors" href="#">Home</a>
+<a class="text-primary font-label text-sm font-medium border-b-2 border-primary pb-1" href="#">Library</a>
+<a class="text-on-surface-variant hover:text-primary font-label text-sm transition-colors" href="#">Growth</a>
+<a class="text-on-surface-variant hover:text-primary font-label text-sm transition-colors" href="#">Settings</a>
+</div>
+</body></html>

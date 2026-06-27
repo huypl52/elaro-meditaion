@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reflection &amp; Growth</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;500;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#303633",
+                      "secondary-fixed": "#b4eee6",
+                      "on-tertiary-fixed-variant": "#5b4221",
+                      "on-background": "#dee4df",
+                      "on-primary-container": "#314732",
+                      "surface-container": "#1b211e",
+                      "secondary-container": "#15524c",
+                      "surface": "#0f1512",
+                      "on-secondary-container": "#8ac3bc",
+                      "outline": "#8d928a",
+                      "on-tertiary-container": "#563d1d",
+                      "tertiary": "#e9c498",
+                      "tertiary-fixed": "#ffddb6",
+                      "surface-tint": "#b4cdb1",
+                      "outline-variant": "#434842",
+                      "surface-bright": "#343b37",
+                      "on-surface": "#dee4df",
+                      "error-container": "#93000a",
+                      "on-primary-fixed": "#0b200e",
+                      "on-secondary-fixed-variant": "#114f4a",
+                      "primary-container": "#9cb59a",
+                      "inverse-surface": "#dee4df",
+                      "on-error-container": "#ffdad6",
+                      "primary-fixed-dim": "#b4cdb1",
+                      "on-primary": "#203522",
+                      "on-surface-variant": "#c3c8bf",
+                      "error": "#ffb4ab",
+                      "tertiary-fixed-dim": "#e5c095",
+                      "on-error": "#690005",
+                      "inverse-primary": "#4d644d",
+                      "background": "#0f1512",
+                      "surface-container-highest": "#303633",
+                      "surface-dim": "#0f1512",
+                      "surface-container-lowest": "#0a0f0d",
+                      "primary-fixed": "#cfeacc",
+                      "tertiary-container": "#cba97f",
+                      "secondary": "#98d1ca",
+                      "inverse-on-surface": "#2c322e",
+                      "surface-container-low": "#171d1a",
+                      "on-tertiary": "#422c0d",
+                      "on-secondary-fixed": "#00201d",
+                      "secondary-fixed-dim": "#98d1ca",
+                      "surface-container-high": "#252b28",
+                      "on-tertiary-fixed": "#2a1800",
+                      "on-secondary": "#003733",
+                      "on-primary-fixed-variant": "#364c37",
+                      "primary": "#b7d1b4"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "2xl": "1.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Newsreader"
+                      ],
+                      "display": [
+                              "Newsreader"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {}
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: #171D1A; /* dark moss background */
+            color: #F4F1EA;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, .font-headline {
+            font-family: 'Newsreader', serif;
+        }
+        .organic-shape {
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            animation: morph 8s ease-in-out infinite alternate;
+        }
+        @keyframes morph {
+            0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            100% { border-radius: 60% 40% 30% 70% / 60% 50% 40% 50%; }
+        }
+        .soft-gradient {
+            background: radial-gradient(circle at top left, rgba(156, 181, 154, 0.15), transparent 60%);
+        }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-low dark:bg-surface-container-low min-h-screen flex flex-col pb-24">
+<!-- TopAppBar -->
+<header class="w-full top-0 bg-background dark:bg-background flat no shadows">
+<div class="flex justify-between items-center px-5 h-16 w-full">
+<button class="text-primary hover:opacity-80 transition-opacity duration-300 flex items-center justify-center p-2 rounded-full">
+<span class="material-symbols-outlined text-2xl">spa</span>
+</button>
+<h1 class="font-headline text-xl text-primary font-bold tracking-tight">Reflection</h1>
+<button class="text-primary hover:opacity-80 transition-opacity duration-300 flex items-center justify-center p-2 rounded-full">
+<span class="material-symbols-outlined text-2xl">emergency_home</span>
+</button>
+</div>
+</header>
+<main class="flex-1 px-5 py-6 space-y-8 max-w-md mx-auto w-full relative">
+<!-- Background Ambient Element -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-container opacity-[0.03] blur-3xl rounded-full pointer-events-none"></div>
+<!-- Narrative Trend (Your Rhythm) -->
+<section class="space-y-4">
+<h2 class="font-headline text-2xl text-on-surface">Your Rhythm</h2>
+<div class="bg-surface-container rounded-2xl p-6 shadow-sm border border-outline-variant/30 soft-gradient relative overflow-hidden">
+<div class="absolute right-[-20px] top-[-20px] w-32 h-32 bg-primary/10 organic-shape opacity-50 pointer-events-none"></div>
+<div class="space-y-5 relative z-10">
+<div>
+<p class="text-lg font-body font-medium text-on-surface mb-1">Finding quiet in the mornings</p>
+<p class="text-sm font-body text-on-surface-variant leading-relaxed">Your recent sessions have naturally aligned with the early hours, setting a gentle tone for the day.</p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 bg-surface-container-high/50 px-4 py-3 rounded-xl border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">volume_down</span>
+<div>
+<p class="text-xs font-label text-muted-text uppercase tracking-wider mb-0.5 opacity-70">Context</p>
+<p class="text-sm font-body text-on-surface">Noise level: Low</p>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-surface-container-high/50 px-4 py-3 rounded-xl border border-outline-variant/20">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">self_improvement</span>
+<div>
+<p class="text-xs font-label text-muted-text uppercase tracking-wider mb-0.5 opacity-70">Focus</p>
+<p class="text-sm font-body text-on-surface">Gentle</p>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/30">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary-container mt-0.5 text-lg" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<div>
+<p class="text-sm font-body text-on-surface">Heart rate variability: <span class="text-tertiary-container">Calm</span></p>
+<p class="text-xs font-label text-on-surface-variant/70 mt-1">Optional biofeedback signal</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Growth Summary -->
+<section class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-high rounded-2xl p-5 flex flex-col justify-center items-start shadow-sm">
+<span class="material-symbols-outlined text-primary mb-3 text-2xl opacity-80">hourglass_empty</span>
+<p class="text-3xl font-headline text-on-surface mb-1">4.5<span class="text-lg text-on-surface-variant ml-1 font-body">hrs</span></p>
+<p class="text-xs font-label text-on-surface-variant mt-1 leading-tight">Total accumulated quiet</p>
+</div>
+<div class="bg-surface-container-high rounded-2xl p-5 flex flex-col justify-center items-start shadow-sm">
+<span class="material-symbols-outlined text-secondary-container mb-3 text-2xl opacity-80">view_timeline</span>
+<p class="text-3xl font-headline text-on-surface mb-1">12</p>
+<p class="text-xs font-label text-on-surface-variant mt-1 leading-tight">Sessions completed</p>
+</div>
+</section>
+<!-- Voice Journal Entry -->
+<section class="mt-8">
+<button class="w-full bg-surface-container hover:bg-surface-container-high transition-colors duration-300 rounded-[28px] p-6 border border-outline-variant/30 flex items-center justify-between group shadow-sm">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary-container group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">mic</span>
+</div>
+<div class="text-left">
+<h3 class="text-lg font-headline text-on-surface">Record a Reflection</h3>
+<p class="text-sm font-body text-on-surface-variant mt-0.5">Start a private voice journal</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-50 group-hover:translate-x-1 transition-transform duration-300">arrow_forward_ios</span>
+</button>
+</section>
+<!-- Offline Note -->
+<div class="flex items-center justify-center gap-2 mt-8 opacity-60 pb-8">
+<span class="material-symbols-outlined text-sm">cloud_off</span>
+<p class="text-xs font-label text-on-surface-variant">Offline Journaling Available</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container-low dark:bg-surface-container-low rounded-t-xl shadow-sm">
+<!-- Home (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary scale-95 duration-200">
+<span class="material-symbols-outlined mb-1 text-2xl">home_max</span>
+<span class="font-label text-xs">Home</span>
+</button>
+<!-- Library (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary scale-95 duration-200">
+<span class="material-symbols-outlined mb-1 text-2xl">auto_stories</span>
+<span class="font-label text-xs">Library</span>
+</button>
+<!-- Growth (Active) -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 hover:text-primary scale-95 duration-200">
+<span class="material-symbols-outlined mb-1 text-2xl" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+<span class="font-label text-xs font-medium">Growth</span>
+</button>
+<!-- Settings (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary scale-95 duration-200">
+<span class="material-symbols-outlined mb-1 text-2xl">settings</span>
+<span class="font-label text-xs">Settings</span>
+</button>
+</nav>
+</body></html>

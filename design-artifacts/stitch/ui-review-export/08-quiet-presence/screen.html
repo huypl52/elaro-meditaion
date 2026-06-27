@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quiet Presence - Calm Meditation Companion</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&amp;family=Inter:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#343b37",
+                        "on-secondary": "#003733",
+                        "surface-container-low": "#171d1a",
+                        "surface-variant": "#303633",
+                        "surface-tint": "#b4cdb1",
+                        "on-primary-fixed": "#0b200e",
+                        "outline": "#8d928a",
+                        "on-secondary-container": "#8ac3bc",
+                        "on-error": "#690005",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#114f4a",
+                        "inverse-on-surface": "#2c322e",
+                        "secondary": "#98d1ca",
+                        "on-tertiary": "#422c0d",
+                        "surface": "#0f1512",
+                        "on-secondary-fixed": "#00201d",
+                        "surface-dim": "#0f1512",
+                        "secondary-fixed-dim": "#98d1ca",
+                        "on-surface": "#dee4df",
+                        "background": "#0f1512",
+                        "tertiary-fixed": "#ffddb6",
+                        "secondary-fixed": "#b4eee6",
+                        "on-background": "#dee4df",
+                        "inverse-surface": "#dee4df",
+                        "on-surface-variant": "#c3c8bf",
+                        "surface-container": "#1b211e",
+                        "primary-container": "#9cb59a",
+                        "on-primary-container": "#314732",
+                        "on-primary": "#203522",
+                        "tertiary": "#e9c498",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed-dim": "#e5c095",
+                        "on-tertiary-fixed": "#2a1800",
+                        "on-tertiary-fixed-variant": "#5b4221",
+                        "primary-fixed": "#cfeacc",
+                        "tertiary-container": "#cba97f",
+                        "secondary-container": "#15524c",
+                        "primary-fixed-dim": "#b4cdb1",
+                        "inverse-primary": "#4d644d",
+                        "surface-container-highest": "#303633",
+                        "primary": "#b7d1b4",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#252b28",
+                        "on-primary-fixed-variant": "#364c37",
+                        "surface-container-lowest": "#0a0f0d",
+                        "outline-variant": "#434842",
+                        "on-tertiary-container": "#563d1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": [
+                            "Newsreader"
+                        ],
+                        "display": [
+                            "Newsreader"
+                        ],
+                        "body": [
+                            "Inter"
+                        ],
+                        "label": [
+                            "Inter"
+                        ]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            font-family: theme('fontFamily.body');
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, h4, .font-headline {
+            font-family: theme('fontFamily.headline');
+        }
+        
+        /* Subtle pulse for presence dots */
+        @keyframes gentle-pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+        .presence-dot {
+            animation: gentle-pulse 4s infinite ease-in-out;
+        }
+        .presence-dot:nth-child(2) { animation-delay: 1s; }
+        .presence-dot:nth-child(3) { animation-delay: 2s; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 sticky z-40 bg-background dark:bg-background flat no shadows transition-opacity duration-300">
+<div class="flex items-center justify-between px-5 py-4 w-full max-w-4xl mx-auto">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-primary dark:text-primary" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="font-headline text-2xl font-normal text-on-surface dark:text-on-surface">Quiet Presence</h1>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-primary dark:text-primary" style="font-variation-settings: 'FILL' 0;">emergency_home</span>
+</button>
+</div>
+</header>
+<main class="px-5 py-6 space-y-10 max-w-4xl mx-auto">
+<!-- Shared Stillness Hero Card -->
+<section class="relative rounded-[28px] overflow-hidden min-h-[320px] flex flex-col justify-end p-8 bg-surface-container-high shadow-lg">
+<div class="absolute inset-0 z-0">
+<img alt="Soft, abstract glowing sage green shapes drifting smoothly over a deep dark background, creating a calm, meditative, and immersive atmosphere." class="w-full h-full object-cover opacity-60" src="https://lh3.googleusercontent.com/aida/AP1WRLvUvAYMbJ8vFAY72tO4l-RMkSh_Jk-KsMogaKlwIrrlQV96ez7s8uR4K5HrRbdrm8grxekv_2RKZ4EIgRejhnw9xmTBd1GjyYAgAK743GRrDmdsrCHKMKw5uJhZO260LrAJJs5dBTtqs5G8SUMJopcDMf4MfLd3DZNS0MjVByOnDpRKc39qOjf1q_1LY0UoDyG77GpV5en6LlocudCsggL6x1BaSkBN2K88z7Kfj6oBMqYRzk-Tlv5DWld7"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+</div>
+<div class="relative z-10 max-w-md">
+<div class="flex items-center space-x-2 mb-4">
+<span class="w-2 h-2 rounded-full bg-primary-container presence-dot"></span>
+<span class="font-label text-sm tracking-wide text-primary-container uppercase">Live Now</span>
+</div>
+<h2 class="font-headline text-3xl text-on-surface mb-3 leading-tight">Shared Stillness</h2>
+<p class="font-body text-on-surface-variant text-base leading-relaxed mb-6">No words, just presence. Sit together in the quiet.</p>
+<button class="bg-primary-container text-on-primary-container font-medium rounded-[18px] px-6 py-3 w-max hover:opacity-90 transition-opacity flex items-center space-x-2">
+<span>Enter the Quiet</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Live Quiet Blocks -->
+<section class="space-y-6">
+<div class="flex items-center justify-between px-2">
+<h3 class="font-headline text-2xl text-on-surface">Quiet Rooms</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Block 1 -->
+<div class="bg-surface-container rounded-[28px] p-6 flex flex-col justify-between min-h-[180px] hover:bg-surface-container-high transition-colors border border-outline-variant/30">
+<div>
+<h4 class="font-headline text-xl text-primary mb-1">Morning Stillness</h4>
+<p class="text-sm text-on-surface-variant">A gentle start to the day.</p>
+</div>
+<div class="flex items-center justify-between mt-6">
+<div class="flex items-center space-x-3 text-secondary">
+<div class="flex -space-x-1">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary/80 presence-dot"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary/60 presence-dot"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary/40 presence-dot"></span>
+</div>
+<span class="font-label text-xs tracking-wider">142 RESTING</span>
+</div>
+<button class="px-5 py-2 rounded-full bg-surface-bright text-on-surface text-sm font-medium hover:bg-surface-variant transition-colors border border-outline-variant/50">
+                            Join
+                        </button>
+</div>
+</div>
+<!-- Block 2 -->
+<div class="bg-surface-container rounded-[28px] p-6 flex flex-col justify-between min-h-[180px] hover:bg-surface-container-high transition-colors border border-outline-variant/30">
+<div>
+<h4 class="font-headline text-xl text-primary mb-1">Deep Rest</h4>
+<p class="text-sm text-on-surface-variant">For moments of overwhelming fatigue.</p>
+</div>
+<div class="flex items-center justify-between mt-6">
+<div class="flex items-center space-x-3 text-secondary">
+<div class="flex -space-x-1">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary/80 presence-dot"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary/60 presence-dot"></span>
+</div>
+<span class="font-label text-xs tracking-wider">89 RESTING</span>
+</div>
+<button class="px-5 py-2 rounded-full bg-surface-bright text-on-surface text-sm font-medium hover:bg-surface-variant transition-colors border border-outline-variant/50">
+                            Join
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Empty State / Start Block -->
+<section class="mt-8">
+<div class="bg-surface-container-low border border-outline-variant/40 rounded-[28px] p-8 text-center flex flex-col items-center justify-center min-h-[200px]">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 0;">flare</span>
+</div>
+<h4 class="font-headline text-xl text-on-surface mb-2">Start a Quiet Room</h4>
+<p class="text-on-surface-variant text-sm max-w-xs mx-auto mb-6">Your presence is the light. Open a space for others to sit in stillness.</p>
+<button class="text-primary-container font-medium text-sm flex items-center space-x-2 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-base">add</span>
+<span>Create Space</span>
+</button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-[28px] bg-surface-container dark:bg-surface-container shadow-lg fixed bottom-0 left-0 w-full flex justify-around items-center px-6 pb-6 pt-3">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 hover:text-primary dark:hover:text-primary scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined font-headline text-lg text-primary" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label text-xs uppercase tracking-wider mt-1">Home</span>
+</a>
+<!-- Library -->
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline hover:text-primary dark:hover:text-primary scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined font-headline text-lg text-primary" style="font-variation-settings: 'FILL' 0;">self_care</span>
+<span class="font-label text-xs uppercase tracking-wider mt-1">Library</span>
+</a>
+<!-- Growth -->
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline hover:text-primary dark:hover:text-primary scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined font-headline text-lg text-primary" style="font-variation-settings: 'FILL' 0;">monitoring</span>
+<span class="font-label text-xs uppercase tracking-wider mt-1">Growth</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline hover:text-primary dark:hover:text-primary scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined font-headline text-lg text-primary" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label text-xs uppercase tracking-wider mt-1">Settings</span>
+</a>
+</nav>
+</body></html>
