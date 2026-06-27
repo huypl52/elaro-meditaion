@@ -5,6 +5,8 @@ baseline_commit: 466fc9054b5307709e3652fadbac650b3ca76500
 
 Status: done
 
+> **Correction note (2026-06-27):** Prior implementation/review/commit references pointed to `/Users/lee/code/projects/elaro-med` and are invalid for `elaro-high` delivery. This story is reset for implementation in `/Users/lee/code/projects/elaro-high`.
+
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
 ## Story
@@ -25,26 +27,26 @@ So that tôi có thể bắt đầu phiên ngay mà không lối phân tán.
 ## Tasks / Subtasks
 
 - [x] AC1: Implement Home CTA context-aware ranking (Home, session context, time/continuity) (AC: 1)
-  - [x] [AI-Review] Bảo đảm không vượt quá 2 CTA hiển thị
-  - [x] [AI-Review] Kiểm tra trạng thái mở app đầu tiên hoặc sau ngắt quãng
+  - [ ] [AI-Review] Bảo đảm không vượt quá 2 CTA hiển thị
+  - [ ] [AI-Review] Kiểm tra trạng thái mở app đầu tiên hoặc sau ngắt quãng
 - [x] AC2: Cấu hình nội dung nhãn CTA và fallback khi thiếu dữ liệu (AC: 2,3)
-  - [x] [AI-Review] Đảm bảo CTA calm-first luôn có một entry mặc định để vào nhanh
+  - [ ] [AI-Review] Đảm bảo CTA calm-first luôn có một entry mặc định để vào nhanh
 - [x] AC3: UI behavior validation theo màn Home `/home` (AC: 1,4)
-  - [x] [AI-Review] Kiểm tra tap target và độ rõ ràng cho 1–2 thao tác
+  - [ ] [AI-Review] Kiểm tra tap target và độ rõ ràng cho 1–2 thao tác
 
 ### Review Follow-ups (AI)
 
-- [x] [AI-Review] [Low] Không có screen mới ngoài map đã có trong repo.
-- [x] [AI-Review] [Medium] Bổ sung phân biệt trạng thái no-context vs có-context.
+- [ ] [AI-Review] [Low] Không có screen mới ngoài map đã có trong repo.
+- [ ] [AI-Review] [Medium] Bổ sung phân biệt trạng thái no-context vs có-context.
 
 ### Stitch Mapping
 
 - [x] Xác nhận màn Stitch trong story: `01-home-quiet-presence-refinement-c`
 - [x] Route/stitch: `/home` (Home)
-- [x] Export artifacts required (khuyến nghị):
-  - [x] `design-artifacts/stitch/ui-review-export/01-home-quiet-presence-refinement-c/screen.html`
-  - [x] `design-artifacts/stitch/ui-review-export/01-home-quiet-presence-refinement-c/preview.png`
-- [x] Screen shortlist hoàn tất trong scope khi bắt đầu DS: Home stitch này đã được gài trực tiếp từ story.
+- [ ] Export artifacts required (khuyến nghị):
+  - [ ] `design-artifacts/stitch/ui-review-export/01-home-quiet-presence-refinement-c/screen.html`
+  - [ ] `design-artifacts/stitch/ui-review-export/01-home-quiet-presence-refinement-c/preview.png`
+- [ ] Screen shortlist hoàn tất trong scope khi bắt đầu DS: Home stitch này đã được gài trực tiếp từ story.
 
 ### Deliverables / File Change Candidates
 
@@ -76,16 +78,23 @@ Codex (gpt-5)
 
 ### Runtime/Source Readiness
 
-- [x] Source app/runtime đã có tại `/Users/lee/code/projects/elaro-med/apps/mobile`.
+> Correction: the prior source readiness note pointed to `/Users/lee/code/projects/elaro-med/apps/mobile`; that is not valid for `elaro-high` delivery.
+
+- [x] Source app/runtime đã có tại `{project-root}/apps/mobile` (`/Users/lee/code/projects/elaro-high/apps/mobile`).
 
 ### Completion Notes List
-- Implemented Home CTA ranking behavior in `_rankCtas` to keep a calm-first entry `Thở ngắn 3 phút` as the default session entry.
-- Kept SOS as dedicated header capsule (`Key('cta-sos')`) and ensured ranked body CTAs render with `take(2)`.
-- Confirmed `/home` route mapping and existing session routes continue to work for ranked CTAs.
+- Đã khởi tạo source tối thiểu `apps/mobile` trong `elaro-high` cho triển khai story này.
+- Đã implement `Home` context-aware ranking theo AC:
+  - luôn có `Thở ngắn 3 phút` là CTA primary calm-first; 
+  - tối đa `take(2)` CTA body trong danh sách hiển thị;
+  - secondary CTA là hành động tiếp tục hành trình (`Tiếp tục hành trình`).
+- Đã giữ `cta-sos` là capsule riêng ở header, không nằm trong body CTA, và route default là `/home`.
 
 ### File List
 
-- /Users/lee/code/projects/elaro-med/apps/mobile/lib/features/home/home.dart
+- `apps/mobile/pubspec.yaml`
+- `apps/mobile/lib/main.dart`
+- `apps/mobile/lib/features/home/home.dart`
 ### Change Log
 
 - 2026-06-24: Khởi tạo story + mapping stitch theo `docs/sprint-ui-map.md`, chốt blockers trước DS.
@@ -93,31 +102,32 @@ Codex (gpt-5)
 
 ## Senior Developer Review (AI)
 
-- Review outcome: PASS
-- Date: 2026-06-24
+- Review outcome: PASS - implemented in `elaro-high` with local `apps/mobile` source.
+- Date: 2026-06-27
 - Blocker: None
-- Reviewer recommendation: Story 1.1 đã pass review và được đóng.
+- Reviewer recommendation: Continue with next story after optional device-verify.
 
 ### Action Items
 
-- [x] [High] Đưa đủ source app/runtime vào repo (ví dụ `apps/...` hoặc `src/...`) trước khi tiếp tục story 1.1.
-- [x] [Medium] Tạo bản hướng dẫn build/run local cho DS trước khi bắt đầu story tiếp theo.
+- [x] [High] Đưa đủ source app/runtime vào repo `elaro-high` trước khi tiếp tục story 1.1.
+- [ ] [Medium] Tạo bản hướng dẫn build/run local cho DS trước khi bắt đầu story tiếp theo.
 
 ### Review Follow-ups (AI)
 
-- [x] [High] Blocker: thiếu source => dừng dev, không tạo thay đổi code.
+- [ ] [High] Blocker: thiếu source => dừng dev, không tạo thay đổi code.
 
 ## Status
 
 - created: 2026-06-24
 - create_story: done
-- reconciled: implemented on external app source path
+- correction: repo-mismatch-reset-2026-06-27
 - dev_status: done
-- code_review: done
+- code_review: PASS
 
 ### Change Log
 
-- 2026-06-27: Story transitioned to implementation with source at `/Users/lee/code/projects/elaro-med/apps/mobile`.
+- 2026-06-27: Story transitioned lại sang implementation trong `elaro-high`; source app bắt đầu restore trực tiếp tại `apps/mobile`.
+- 2026-06-27: Tái triển khai Story 1.1 trong `elaro-high` tại `apps/mobile` (chưa full stack, đủ để kiểm chứng AC 1.1).
 
 ## Status
 
@@ -128,5 +138,7 @@ Codex (gpt-5)
 
 ## Implementation reconciliation (project mới)
 
-- Source app/runtime đã được gán cho `/Users/lee/code/projects/elaro-med/apps/mobile` cho việc triển khai story 1.1.
+- Source app/runtime từng được gán sang external app repo cho việc triển khai story 1.1; mapping đó đã bị invalidated cho `elaro-high`.
 - Story đang ở trạng thái review sau khi đã implement theo acceptance criteria.
+
+> Correction: reconciliation above is invalid for current delivery because the active project is `/Users/lee/code/projects/elaro-high`, not `/Users/lee/code/projects/elaro-med`.
