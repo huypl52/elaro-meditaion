@@ -627,6 +627,7 @@ class _SessionActiveScreenState extends State<SessionActiveScreen>
 
   late final List<int> _bellCues;
   final Set<int> _firedBells = <int>{};
+  late int _lastBreathingPhaseIndex;
 
   @override
   void initState() {
@@ -653,6 +654,7 @@ class _SessionActiveScreenState extends State<SessionActiveScreen>
           isPaused: _isPaused);
     }
 
+    _lastBreathingPhaseIndex = _breathingPhaseIndex(_elapsedSeconds);
     _syncBells();
 
     if (!_isComplete && !_isPaused) {
@@ -1033,6 +1035,7 @@ class _SessionActiveScreenState extends State<SessionActiveScreen>
     });
 
     _syncBells();
+    _syncBreathingCue();
 
     if (_elapsedSeconds >= _sessionDurationSeconds) {
       _complete();
@@ -1052,6 +1055,23 @@ class _SessionActiveScreenState extends State<SessionActiveScreen>
             sessionId: _sessionId, elapsedSeconds: _elapsedSeconds, cue: cue);
       }
     }
+  }
+
+  void _syncBreathingCue() {
+    final phaseIndex = _breathingPhaseIndex(_elapsedSeconds);
+    if (phaseIndex == _lastBreathingPhaseIndex) {
+      return;
+    }
+
+    _lastBreathingPhaseIndex = phaseIndex;
+    AccessibilityRuntime.fireHapticCue(
+      context,
+      HapticFeedbackType.light,
+    );
+  }
+
+  int _breathingPhaseIndex(int elapsedSeconds) {
+    return (elapsedSeconds ~/ _breathingPhaseSeconds) % 4;
   }
 
   void _onPause() {
