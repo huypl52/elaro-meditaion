@@ -1,5 +1,5 @@
 # generated: 2026-06-24T08:22:19Z
-# last_updated: 2026-06-27T14:32:00+07:00
+# last_updated: 2026-06-27T15:34:13+07:00
 # project: meditation-community
 # project_key: NOKEY
 # tracking_system: file-system
@@ -24,7 +24,7 @@
 #   - done: Retrospective has been completed
 
 generated: 2026-06-24T08:22:19Z
-last_updated: 2026-06-27T15:02:03+07:00
+last_updated: 2026-06-27T15:34:13+07:00
 project: meditation-community
 project_key: NOKEY
 tracking_system: file-system
@@ -47,7 +47,7 @@ development_status:
   2-4-session-runtime-h-tr-noise-aware-mode-baseline: done
   3-1-growth-map-kh-ng-d-ng-streak-pressure: done
   3-2-voice-journal-sau-phi-n: done
-  3-3-personal-ritual-builder-v-replay: backlog
+  3-3-personal-ritual-builder-v-replay: done
   3-4-session-reflection-narrative-baseline: backlog
   3-5-reflection-n-ng-cao-v-i-biofeedback-khi-c-quy-n: backlog
   4-1-taxonomy-content-theo-need-context-duration-intensity: backlog

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:elaro_mobile/features/session/session.dart';
+import 'package:elaro_mobile/features/ritual/ritual.dart';
 import 'package:elaro_mobile/components/calm_top_app_bar.dart';
 import 'package:elaro_mobile/runtime/sensor_runtime.dart';
 import 'package:elaro_mobile/runtime/sos_runtime.dart';
@@ -44,6 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
           _buildQuickCheckinRow(context),
+          const SizedBox(height: 16),
+          const HomeRitualRow(),
           const SizedBox(height: 16),
           Text(
             'Chọn hành động tiếp theo',

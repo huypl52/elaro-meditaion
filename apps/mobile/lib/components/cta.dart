@@ -6,12 +6,14 @@ import 'package:elaro_mobile/theme/growth_tokens.dart';
 class PrimaryCTA extends StatelessWidget {
   const PrimaryCTA({
     super.key,
+    this.buttonKey,
     required this.label,
     required this.onPressed,
   });
 
+  final Key? buttonKey;
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +21,7 @@ class PrimaryCTA extends StatelessWidget {
     final typography = GrowthTokens.of(context);
 
     return FilledButton(
+      key: buttonKey,
       onPressed: onPressed,
       style: FilledButton.styleFrom(
         backgroundColor: colors.growthPrimary,
@@ -35,12 +38,14 @@ class PrimaryCTA extends StatelessWidget {
 class SecondaryCTA extends StatelessWidget {
   const SecondaryCTA({
     super.key,
+    this.buttonKey,
     required this.label,
     required this.onPressed,
   });
 
+  final Key? buttonKey;
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +53,7 @@ class SecondaryCTA extends StatelessWidget {
     final typography = GrowthTokens.of(context);
 
     return OutlinedButton(
+      key: buttonKey,
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         foregroundColor: colors.growthPrimary,

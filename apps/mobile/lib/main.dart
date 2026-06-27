@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:elaro_mobile/features/growth/growth.dart';
 import 'package:elaro_mobile/features/home/home.dart';
+import 'package:elaro_mobile/features/ritual/ritual.dart';
 import 'package:elaro_mobile/features/session/session.dart';
 import 'package:elaro_mobile/features/sos/sos.dart';
 import 'package:elaro_mobile/features/voice_journal/voice_journal.dart';
@@ -46,6 +47,16 @@ class ElaroMedApp extends StatelessWidget {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => SosActiveScreen(args: args),
+        );
+      case '/rituals/builder':
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const RitualBuilderScreen(),
+        );
+      case '/ritual/replay':
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const RitualReplayScreen(),
         );
       case '/session/start':
         final args = SessionStartArgs.fromDynamic(settings.arguments);
