@@ -24,7 +24,7 @@
 #   - done: Retrospective has been completed
 
 generated: 2026-06-24T08:22:19Z
-last_updated: 2026-06-27T14:13:22+07:00
+last_updated: 2026-06-27T14:40:00+07:00
 project: meditation-community
 project_key: NOKEY
 tracking_system: file-system
@@ -65,7 +65,7 @@ development_status:
   6-5-error-envelope-ids-sync-conflict-safety: backlog
   6-6-accessibility-baseline-v-haptic-first-runtime: backlog
   1-retrospective: done
-  2-retrospective: optional
+  2-retrospective: done
   3-retrospective: optional
   4-retrospective: optional
   5-retrospective: optional
@@ -87,4 +87,20 @@ action_items:
   - epic: "1"
     action: "Process/Release: ràng buộc story đóng gói thành một packet (artifact + code + test) trong cùng một unit review để tránh split-traceability."
     owner: "John"
+    status: open
+  - epic: "2"
+    action: "Close gate hard-fail: đóng story phải có cùng packet artifact+code+test trong 1 context; thiếu code/test thì close = BLOCK."
+    owner: "Amelia"
+    status: open
+  - epic: "2"
+    action: "Full-suite pre-close: trước close story có ảnh hưởng runtime/session/permission, bắt buộc full flutter test toàn app (ít nhất chạy baseline suite cốt lõi)."
+    owner: "Murat"
+    status: open
+  - epic: "2"
+    action: "Microphone permission reliability: bổ sung instrumentation/native e2e cho MethodChannel/EventChannel trước môi trường production rollout."
+    owner: "Winston"
+    status: open
+  - epic: "2"
+    action: "Epic 1 retrospective follow-through: chuyển action item mở sang status xác thực theo evidence hoặc close có ghi chú lý do."
+    owner: "Paige"
     status: open
